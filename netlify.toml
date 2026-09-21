@@ -1,0 +1,14 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Public, client-exposed Supabase config (publishable key, RLS-protected) so the
+# Netlify build embeds it. The service_role key is NEVER placed here.
+[build.environment]
+  VITE_SUPABASE_URL = "https://ctlmpfitmqojaxpdwfyo.supabase.co"
+  VITE_SUPABASE_ANON_KEY = "sb_publishable_S2NcqrfkKdNH2DLcrOPIwQ_bzotKeEB"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
