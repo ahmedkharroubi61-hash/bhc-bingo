@@ -6,7 +6,7 @@ export function Placeholder({ title, note }: { title: string; note?: string }) {
       <div className="page-hero">
         <div className="container">
           <p className="breadcrumb"><Link to="/">Home</Link> / {title}</p>
-          <p className="eyebrow">Bio Bingo Parapharmacie</p>
+          <p className="eyebrow">BHC Bingo Parapharmacie</p>
           <h1>{title}</h1>
         </div>
       </div>

@@ -28,7 +28,7 @@ export function Brands() {
         <img className="cat-hero-bg" src="/img/cat-makeup.jpg" alt="" aria-hidden="true" loading="eager" />
         <div className="cat-hero-scrim" aria-hidden="true" />
         <div className="container cat-hero-inner">
-          <p className="cat-hero-kicker">Bio Bingo · Parapharmacie</p>
+          <p className="cat-hero-kicker">BHC Bingo · Parapharmacie</p>
           <h1 className="cat-hero-title" id="brands-title">Our Brands</h1>
           <p className="cat-hero-sub">The dermatologist-loved houses we curate — explore each brand's full range.</p>
         </div>

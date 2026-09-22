@@ -1,5 +1,5 @@
 /** A rotating ring of curved text — the editorial "seal" that hugs the hero arches. */
-export function ArcBadge({ id, text = "Bio Bingo · Parapharmacie · " }: { id: string; text?: string }) {
+export function ArcBadge({ id, text = "BHC Bingo · Parapharmacie · " }: { id: string; text?: string }) {
   const ring = text.repeat(2);
   return (
     <svg className="arc-badge" viewBox="0 0 100 100" aria-hidden="true">

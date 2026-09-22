@@ -56,7 +56,7 @@ export function Home() {
     <div className="nu">
       {/* HERO */}
       <section className="nu-hero" aria-labelledby="nu-hero-title">
-        <span className="nu-hero-word" aria-hidden="true">BIOBINGO</span>
+        <span className="nu-hero-word" aria-hidden="true">BHC BINGO</span>
         <div className="container nu-hero-grid">
           <div className="nu-hero-figure">
             {heroProduct ? (
@@ -198,7 +198,7 @@ function Newsletter() {
           </form>
           <div className="nu-consent">
             <input id="news-consent" type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
-            <label htmlFor="news-consent">I agree to receive marketing emails from Bio Bingo and I have read the <Link to="/privacy-policy">Privacy Policy</Link>.</label>
+            <label htmlFor="news-consent">I agree to receive marketing emails from BHC Bingo and I have read the <Link to="/privacy-policy">Privacy Policy</Link>.</label>
           </div>
           {status ? <p className={`form-status ${status.ok ? "ok" : "err"}`} role="status" aria-live="polite">{status.msg}</p> : null}
         </div>

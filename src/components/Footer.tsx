@@ -12,8 +12,8 @@ export function Footer() {
       <div className="container">
         <div className="footer-grid">
           <div className="footer-brand">
-            <Link className="brand" to="/" aria-label="Bio Bingo — home">
-              <span className="brand-wordmark">BIOBINGO</span>
+            <Link className="brand" to="/" aria-label="BHC Bingo — home">
+              <span className="brand-wordmark">BHC BINGO</span>
             </Link>
             <p>A premium parapharmacie for skincare, cosmetics and wellness — authentic products and professional advice.</p>
           </div>
@@ -53,7 +53,7 @@ export function Footer() {
       </div>
       <div className="footer-bottom">
         <div className="container">
-          <span>© {year} Bio Bingo Parapharmacie. All rights reserved.</span>
+          <span>© {year} BHC Bingo Parapharmacie. All rights reserved.</span>
           <span>
             <Link to="/privacy-policy">Privacy</Link> · <Link to="/cookie-policy">Cookies</Link> · <Link to="/terms-and-conditions">Terms</Link> · <Link to="/legal-notice">Legal Notice</Link>
           </span>

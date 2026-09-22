@@ -92,8 +92,8 @@ export function Header() {
               </nav>
             </div>
 
-            <Link className="brand" to="/" aria-label="Bio Bingo — home">
-              <span className="brand-wordmark">BIOBINGO</span>
+            <Link className="brand" to="/" aria-label="BHC Bingo — home">
+              <span className="brand-wordmark">BHC BINGO</span>
             </Link>
 
             <div className="nav-actions">

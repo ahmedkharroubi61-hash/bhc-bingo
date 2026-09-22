@@ -119,7 +119,7 @@ export function Catalog() {
         <img className="cat-hero-bg" src={meta.banner} alt="" aria-hidden="true" loading="eager" />
         <div className="cat-hero-scrim" aria-hidden="true" />
         <div className="container cat-hero-inner">
-          <p className="cat-hero-kicker">{searchMode ? "Search" : brandMode ? "Our Brands" : "Bio Bingo · Parapharmacie"}</p>
+          <p className="cat-hero-kicker">{searchMode ? "Search" : brandMode ? "Our Brands" : "BHC Bingo · Parapharmacie"}</p>
           <h1 className="cat-hero-title" id="cat-hero-title">{title}</h1>
           <p className="cat-hero-sub">{meta.sub}</p>
         </div>

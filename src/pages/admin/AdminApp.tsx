@@ -35,7 +35,7 @@ export function AdminApp() {
     <div className="admin-shell">
       <aside className="admin-side">
         <div className="admin-brand">
-          <span className="admin-brand-mark">BIOBINGO</span>
+          <span className="admin-brand-mark">BHC BINGO</span>
           <span className="admin-brand-tag">Admin</span>
         </div>
         <nav className="admin-nav" aria-label="Admin sections">

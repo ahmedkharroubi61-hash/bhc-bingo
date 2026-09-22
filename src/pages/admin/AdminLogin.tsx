@@ -31,7 +31,7 @@ export function AdminLogin({ session }: Props) {
     <div className="admin-auth">
       <aside className="admin-auth-brand">
         <div className="admin-auth-brand-top">
-          <span className="admin-brand-mark">BIOBINGO</span>
+          <span className="admin-brand-mark">BHC BINGO</span>
           <span className="admin-auth-brand-tag">Operations Console</span>
         </div>
         <div className="admin-auth-brand-mid">
@@ -42,7 +42,7 @@ export function AdminLogin({ session }: Props) {
             <li>Monthly sales &amp; best-sellers</li>
           </ul>
         </div>
-        <p className="admin-auth-brand-foot">Bio Bingo · Parapharmacie — authentic products, chosen with care.</p>
+        <p className="admin-auth-brand-foot">BHC Bingo · Parapharmacie — authentic products, chosen with care.</p>
       </aside>
 
       <div className="admin-auth-panel">
