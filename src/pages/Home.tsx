@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useProducts } from "../lib/useProducts";
 import { useInStockCategorySet } from "../lib/useCategoryNav";
@@ -40,6 +40,82 @@ function Marquee() {
   );
 }
 
+/**
+ * Hero coverflow — product cards ride a 3D carousel: each one rises from the
+ * back (small, turned away), sweeps to the front centre (big, facing you), then
+ * recedes to the other side. Runs non-stop; hovering the cursor pauses it so a
+ * card is easy to click.
+ */
+function HeroRoller({ items }: { items: Product[] }) {
+  const n = items.length;
+  const cardRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const pausedRef = useRef(false);
+  const offsetRef = useRef(0);
+
+  useEffect(() => {
+    if (n === 0) return;
+    const SPEED = 0.15; // cards advanced per second (slow, calm)
+    let last = performance.now();
+    const step = () => {
+      const now = performance.now();
+      const dt = Math.min(0.1, (now - last) / 1000);
+      last = now;
+      if (!pausedRef.current) offsetRef.current += SPEED * dt;
+      const off = offsetRef.current;
+      // Spread cards ~1 card-width apart so neighbours never cross the front one.
+      const cardW = cardRefs.current[0]?.offsetWidth || 240;
+      for (let i = 0; i < n; i++) {
+        const el = cardRefs.current[i];
+        if (!el) continue;
+        // pos: signed distance from centre, wrapped into (-n/2, n/2]
+        let pos = ((i - off) % n + n) % n;
+        if (pos > n / 2) pos -= n;
+        const abs = Math.abs(pos);
+        const x = pos * cardW * 0.92;              // horizontal spread ≈ card width
+        const z = -abs * 300;                      // push side cards well back
+        const ry = Math.max(-40, Math.min(40, -pos * 26)); // turn to face centre
+        const scale = Math.max(0.5, 1 - abs * 0.3);
+        el.style.transform =
+          `translate(-50%, -50%) translateX(${x}px) translateZ(${z}px) rotateY(${ry}deg) scale(${scale})`;
+        el.style.opacity = String(Math.max(0, 1 - abs * 0.5));
+        el.style.zIndex = String(100 - Math.round(abs * 10));
+        el.style.pointerEvents = abs < 0.5 ? "auto" : "none"; // only the front card is clickable
+      }
+    };
+    step();
+    const id = window.setInterval(step, 1000 / 60);
+    return () => window.clearInterval(id);
+  }, [n]);
+
+  if (n === 0) return <div className="nu-hero-figure" aria-hidden="true" />;
+
+  return (
+    <div className="nu-hero-figure">
+      <div
+        className="nu-hero-cf"
+        onMouseEnter={() => { pausedRef.current = true; }}
+        onMouseLeave={() => { pausedRef.current = false; }}
+      >
+        {items.map((p, i) => (
+          <Link
+            key={p.id}
+            ref={(el) => { cardRefs.current[i] = el; }}
+            to={`/product/${p.id}`}
+            className="nu-hero-card"
+          >
+            <img className="nu-hero-card-img" src={p.image} alt={p.alt} loading={i < 2 ? "eager" : "lazy"} />
+            <span className="nu-hero-card-info">
+              <span className="nu-hero-card-brand">{p.brand}</span>
+              <span className="nu-hero-card-title">{p.title}</span>
+              <span className="nu-hero-card-price">{formatPrice(p.priceMillimes)}</span>
+            </span>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function Home() {
   const products = useProducts();
   const inStock = useInStockCategorySet();
@@ -47,8 +123,8 @@ export function Home() {
   const [tab, setTab] = useState<ProductTag>("best");
   const by = (t: ProductTag): Product[] => (products ?? []).filter((p) => p.tags.includes(t));
 
-  const heroProduct = (by("featured")[0] ?? (products ?? [])[0]);
   const feats = by("featured");
+  const heroItems = (feats.length ? feats : (products ?? [])).slice(0, 6);
   const grid = (feats.length >= 6 ? feats : (products ?? [])).slice(0, 6);
   const tabItems = by(tab).slice(0, 6);
 
@@ -58,14 +134,7 @@ export function Home() {
       <section className="nu-hero" aria-labelledby="nu-hero-title">
         <span className="nu-hero-word" aria-hidden="true">BHC BINGO</span>
         <div className="container nu-hero-grid">
-          <div className="nu-hero-figure">
-            {heroProduct ? (
-              <Link to={`/product/${heroProduct.id}`} className="nu-hero-shot" aria-label={heroProduct.title}>
-                <img src={heroProduct.image} alt={heroProduct.alt} loading="eager" />
-              </Link>
-            ) : null}
-            <span className="nu-hero-pedestal" aria-hidden="true" />
-          </div>
+          <HeroRoller items={heroItems} />
 
           <div className="nu-hero-copy">
             <h1 className="nu-hero-title" id="nu-hero-title">

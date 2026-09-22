@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useStore, lineKey } from "../context/StoreContext";
+import { useAuth } from "../context/AuthContext";
 import { useCartLines } from "../lib/useCartLines";
+import { getMyProfile, saveMyProfile } from "../lib/profile";
 import { formatPrice } from "../lib/format";
 import { SectionHead } from "../components/SectionHead";
 import { WHATSAPP_NUMBER, DELIVERY_FEE_MILLIMES, FREE_DELIVERY_OVER_MILLIMES } from "../lib/config";
@@ -24,11 +26,31 @@ function whatsappHref(order: Order): string {
 export function CheckoutPage() {
   const navigate = useNavigate();
   const { clearCart } = useStore();
+  const { user } = useAuth();
   const { lines, subtotal } = useCartLines();
   const [form, setForm] = useState<CustomerDetails>({ name: "", phone: "", address: "", city: "", notes: "" });
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  // Prefill from the signed-in customer's saved details, without clobbering
+  // anything they've already typed.
+  useEffect(() => {
+    if (!user) return;
+    let alive = true;
+    const accountName = [user.firstName, user.lastName].filter(Boolean).join(" ");
+    getMyProfile().then((p) => {
+      if (!alive) return;
+      setForm((f) => ({
+        ...f,
+        name: f.name || p.fullName || accountName,
+        phone: f.phone || p.phone,
+        address: f.address || p.address,
+        city: f.city || p.city,
+      }));
+    });
+    return () => { alive = false; };
+  }, [user]);
 
   const delivery = subtotal >= FREE_DELIVERY_OVER_MILLIMES ? 0 : DELIVERY_FEE_MILLIMES;
   const total = subtotal + delivery;
@@ -48,12 +70,24 @@ export function CheckoutPage() {
     return true;
   };
 
+  // Best-effort: keep the signed-in customer's saved details fresh for next time.
+  // Never blocks or fails the order.
+  const persistProfile = async () => {
+    if (!user) return;
+    try {
+      await saveMyProfile(user.id, { fullName: form.name, phone: form.phone, address: form.address, city: form.city });
+    } catch {
+      /* ignore — the order already succeeded */
+    }
+  };
+
   const placeOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (lines.length === 0 || !validate() || submitting) return;
     setSubmitting(true);
     try {
       const order = await createOrder(lines, form);
+      await persistProfile();
       clearCart();
       navigate("/order-confirmed", { state: { order } });
     } catch (err) {
@@ -67,6 +101,7 @@ export function CheckoutPage() {
     setSubmitting(true);
     try {
       const order = await createOrder(lines, form);
+      await persistProfile();
       window.open(whatsappHref(order), "_blank", "noopener");
       clearCart();
       navigate("/order-confirmed", { state: { order } });

@@ -1915,3 +1915,133 @@ body.admin-mode { background: var(--adm-bg); }
 .admin-ai-btn { background: linear-gradient(120deg, #A6482B, #8A3A22); color: #fff; border-color: transparent; box-shadow: 0 8px 18px -8px rgba(166,72,43,.55); }
 .admin-ai-btn:hover:not(:disabled) { background: linear-gradient(120deg, #b6512f, #9a4127); }
 .admin-ai-note { background: var(--adm-amber-soft); border: 1px solid #F1D69E; color: #93630c; border-radius: 8px; padding: 8px 12px; font-size: .82rem; margin: 0 0 12px; }
+
+/* ============================================================
+   Customer accounts — login / sign-up + account dashboard
+   ============================================================ */
+.nav-account { position: relative; }
+.nav-account-dot {
+  position: absolute; top: 8px; right: 8px; width: 7px; height: 7px;
+  border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 2px var(--panel);
+}
+
+.acct-auth-wrap { max-width: 460px; margin: 0 auto; }
+.acct-auth-card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--r);
+  padding: 26px; box-shadow: 0 1px 0 var(--line);
+}
+.acct-tabs {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--r);
+  padding: 4px; margin-bottom: 18px;
+}
+.acct-tab {
+  appearance: none; border: 0; background: transparent; cursor: pointer;
+  padding: 10px 12px; border-radius: calc(var(--r) - 4px);
+  font-size: .82rem; font-weight: 600; letter-spacing: .02em; color: var(--ink-dim);
+  transition: background .18s var(--ease), color .18s var(--ease);
+}
+.acct-tab:hover { color: var(--ink); }
+.acct-tab.active { background: var(--panel); color: var(--ink); box-shadow: 0 1px 3px rgba(20,20,26,.08); }
+.acct-auth-lead { font-size: .92rem; color: var(--ink-dim); margin-bottom: 18px; }
+
+.acct-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.acct-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 22px; align-items: start; }
+.acct-panel {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 22px;
+}
+.btn-sm { padding: 8px 14px; font-size: .78rem; }
+
+.acct-orders { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 14px; }
+.acct-order { border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; background: var(--panel-2); }
+.acct-order-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.acct-order-id { font-weight: 700; letter-spacing: .04em; color: var(--ink); }
+.acct-status {
+  font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 700;
+  padding: 4px 9px; border-radius: 999px; border: 1px solid var(--line-strong); color: var(--ink-dim);
+}
+.acct-status-confirmed { background: rgba(31,122,74,.12); border-color: rgba(31,122,74,.4); color: #1f7a4a; }
+.acct-status-pending   { background: rgba(176,124,20,.12); border-color: rgba(176,124,20,.4); color: #b07c14; }
+.acct-status-cancelled { background: rgba(166,44,44,.10); border-color: rgba(166,44,44,.35); color: #a62c2c; }
+.acct-order-meta { display: flex; justify-content: space-between; gap: 10px; margin-top: 6px; font-size: .8rem; color: var(--ink-mute); }
+.acct-order-items { list-style: none; margin: 12px 0 0; padding: 12px 0 0; border-top: 1px solid var(--line); display: grid; gap: 6px; }
+.acct-order-items li { display: flex; justify-content: space-between; gap: 12px; font-size: .86rem; color: var(--ink-dim); }
+.acct-order-items li span:last-child { color: var(--ink); white-space: nowrap; }
+
+@media (max-width: 720px) {
+  .acct-grid { grid-template-columns: 1fr; }
+}
+
+/* Sign-up: name row + live password checklist */
+.acct-name-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.acct-pw-rules {
+  list-style: none; margin: 4px 0 0; padding: 12px 14px; display: grid; gap: 6px;
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--r);
+}
+.acct-pw-rules li { font-size: .8rem; color: var(--ink-mute); display: flex; align-items: center; gap: 8px; }
+.acct-pw-rules li span { width: 1em; color: var(--line-strong); font-weight: 700; }
+.acct-pw-rules li.met { color: var(--ink-dim); }
+.acct-pw-rules li.met span { color: #1f7a4a; }
+
+@media (max-width: 460px) {
+  .acct-name-row { grid-template-columns: 1fr; }
+}
+
+/* Brand logo (replaces the BHC BINGO text wordmark) */
+.brand-logo { display: block; height: 44px; width: auto; }
+.brand-logo-footer { height: 58px; }
+@media (max-width: 600px) { .brand-logo { height: 36px; } }
+
+/* "BINGO" wordmark beside the logo mark — matched to the logo's letterforms
+   (bold, rounded, geometric) and its green. */
+.brand { gap: 9px; }
+.brand-name {
+  font-family: "Montserrat", var(--sans);
+  font-weight: 800;
+  font-size: 1.7rem;
+  letter-spacing: .005em;
+  line-height: 1;
+  color: #241D1A;
+  /* nudge onto the logo's optical centre-line */
+  position: relative;
+  top: 1px;
+}
+/* brand-green full stop */
+.brand-name::after { content: "."; color: #80B820; }
+.brand-name-footer { color: #F4F1EA; }
+@media (max-width: 600px) { .brand-name { font-size: 1.36rem; } }
+
+/* Hero product coverflow — 3D carousel; cards rise from the back to the front */
+.nu-hero-cf {
+  --card-w: clamp(200px, 24vw, 270px);
+  position: relative;
+  width: 100%;
+  height: calc(var(--card-w) * 1.5);
+  perspective: 1300px;
+  transform-style: preserve-3d;
+}
+.nu-hero-card {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: var(--card-w); height: var(--card-w); /* square tile */
+  transform: translate(-50%, -50%); /* JS overwrites this each frame */
+  border-radius: 18px; overflow: hidden;
+  background: #fff;
+  box-shadow: 0 34px 60px -34px rgba(43, 34, 22, .6);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+.nu-hero-card-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.nu-hero-card-info {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  display: flex; flex-direction: column; gap: 1px;
+  padding: 46px 16px 15px; text-align: left;
+  background: linear-gradient(to top, rgba(20, 16, 12, .82), rgba(20, 16, 12, .38) 45%, transparent);
+  color: #fff;
+}
+.nu-hero-card-brand { font-size: .62rem; letter-spacing: .16em; text-transform: uppercase; color: rgba(255, 255, 255, .82); }
+.nu-hero-card-title {
+  font-size: .96rem; font-weight: 600; line-height: 1.2; color: #fff; margin-top: 2px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.nu-hero-card-price { font-family: var(--serif); font-size: 1.2rem; color: #fff; margin-top: 5px; }

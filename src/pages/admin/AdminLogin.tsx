@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { AdminSession } from "../../lib/adminAuth";
+import { getLockStatus, recordFailure, resetGuard, formatCountdown, type LockStatus } from "../../lib/loginGuard";
 import { IconLock } from "./adminIcons";
 
 interface Props {
@@ -14,17 +15,33 @@ export function AdminLogin({ session }: Props) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [lock, setLock] = useState<LockStatus>(() => getLockStatus());
 
   const notAuthorised = !!session.email && !session.isAdmin;
+
+  // While locked, tick every second so the countdown updates and the form
+  // re-enables the moment the cooldown expires.
+  useEffect(() => {
+    if (!lock.locked) return;
+    const id = window.setInterval(() => setLock(getLockStatus()), 1000);
+    return () => window.clearInterval(id);
+  }, [lock.locked]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (busy) return;
+    if (getLockStatus().locked) { setLock(getLockStatus()); return; }
     setBusy(true);
     setError(null);
     const err = await session.signIn(email, password);
     setBusy(false);
-    if (err) setError(err);
+    if (err) {
+      setError(err);
+      setLock(recordFailure());
+    } else {
+      resetGuard();
+      setLock(getLockStatus());
+    }
   };
 
   return (
@@ -67,17 +84,32 @@ export function AdminLogin({ session }: Props) {
 
             <label className="admin-field">
               <span>Email</span>
-              <input type="email" autoComplete="username" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              <input type="email" autoComplete="username" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} disabled={lock.locked} required />
             </label>
             <label className="admin-field">
               <span>Password</span>
-              <input type="password" autoComplete="current-password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
+              <input type="password" autoComplete="current-password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} disabled={lock.locked} required />
             </label>
 
-            {error ? <p className="admin-auth-error" role="alert">{error}</p> : null}
+            {lock.locked ? (
+              <p className="admin-auth-error" role="alert">
+                Too many failed attempts. Try again in <strong>{formatCountdown(lock.remainingMs)}</strong>.
+              </p>
+            ) : error ? (
+              <>
+                <p className="admin-auth-error" role="alert">{error}</p>
+                {lock.attempts > 0 && lock.attemptsLeft <= 2 ? (
+                  <p className="admin-auth-note">
+                    {lock.attemptsLeft > 0
+                      ? `${lock.attemptsLeft} attempt${lock.attemptsLeft === 1 ? "" : "s"} left before a temporary lock.`
+                      : "The next failed attempt will temporarily lock sign-in."}
+                  </p>
+                ) : null}
+              </>
+            ) : null}
 
-            <button type="submit" className="admin-btn admin-btn-primary admin-btn-block" disabled={busy}>
-              {busy ? "Signing in…" : "Sign in to console"}
+            <button type="submit" className="admin-btn admin-btn-primary admin-btn-block" disabled={busy || lock.locked}>
+              {lock.locked ? `Locked · ${formatCountdown(lock.remainingMs)}` : busy ? "Signing in…" : "Sign in to console"}
             </button>
           </form>
         )}

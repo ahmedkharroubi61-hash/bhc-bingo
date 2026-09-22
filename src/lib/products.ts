@@ -49,11 +49,39 @@ function mapRow(r: Row): Product {
   };
 }
 
-export async function getProducts(): Promise<Product[]> {
+/** How long a fetched catalogue is reused before re-fetching. */
+const PRODUCTS_TTL_MS = 60_000;
+let productsCache: { at: number; promise: Promise<Product[]> } | null = null;
+
+async function fetchProducts(): Promise<Product[]> {
   if (!supabase) return withContent(seedProducts);
   const { data, error } = await supabase.from("products").select("*").eq("active", true);
   if (error || !data || data.length === 0) return withContent(seedProducts);
   return withContent((data as Row[]).map(mapRow));
+}
+
+/**
+ * The active catalogue. Deduplicates concurrent callers (many components use
+ * useProducts on one page) and caches briefly so a page load makes a single
+ * request instead of one per component. A failed fetch is not cached.
+ */
+export function getProducts(): Promise<Product[]> {
+  const now = Date.now();
+  if (productsCache && now - productsCache.at < PRODUCTS_TTL_MS) {
+    return productsCache.promise;
+  }
+  const promise = fetchProducts().catch((err) => {
+    // Don't cache a failure — let the next caller retry.
+    if (productsCache?.promise === promise) productsCache = null;
+    throw err;
+  });
+  productsCache = { at: now, promise };
+  return promise;
+}
+
+/** Drop the cached catalogue so the next read re-fetches (e.g. after an admin edit). */
+export function invalidateProducts(): void {
+  productsCache = null;
 }
 
 export async function getCategories(): Promise<Category[]> {

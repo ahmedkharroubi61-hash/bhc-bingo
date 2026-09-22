@@ -13,7 +13,8 @@ export function Footer() {
         <div className="footer-grid">
           <div className="footer-brand">
             <Link className="brand" to="/" aria-label="BHC Bingo — home">
-              <span className="brand-wordmark">BHC BINGO</span>
+              <img className="brand-logo brand-logo-footer" src="/img/logo-light.png" alt="" width={343} height={283} />
+              <span className="brand-name brand-name-footer">BINGO</span>
             </Link>
             <p>A premium parapharmacie for skincare, cosmetics and wellness — authentic products and professional advice.</p>
           </div>

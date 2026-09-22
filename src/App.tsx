@@ -10,6 +10,7 @@ import { OrderConfirmed } from "./pages/OrderConfirmed";
 import { WishlistPage } from "./pages/WishlistPage";
 import { Placeholder } from "./pages/Placeholder";
 import { NotFound } from "./pages/NotFound";
+import { AccountPage } from "./pages/account/AccountPage";
 import { AdminApp } from "./pages/admin/AdminApp";
 
 export default function App() {
@@ -28,7 +29,7 @@ export default function App() {
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/order-confirmed" element={<OrderConfirmed />} />
         <Route path="/wishlist" element={<WishlistPage />} />
-        <Route path="/account" element={<Placeholder title="My Account" note="Sign-in and order history arrive with the accounts phase (Supabase Auth)." />} />
+        <Route path="/account" element={<AccountPage />} />
         <Route path="/contact" element={<Placeholder title="Contact Us" />} />
         <Route path="/about" element={<Placeholder title="About Us" />} />
         <Route path="/shipping-returns" element={<Placeholder title="Shipping & Returns" />} />

@@ -1,5 +1,7 @@
 import { supabase } from "./supabase";
 import { DELIVERY_FEE_MILLIMES, FREE_DELIVERY_OVER_MILLIMES } from "./config";
+import { invalidateProducts } from "./products";
+import { withTimeout } from "./net";
 import type { CustomerDetails, Order } from "./types";
 import type { ResolvedLine } from "./useCartLines";
 
@@ -73,15 +75,24 @@ export async function createOrder(lines: ResolvedLine[], customer: CustomerDetai
     p_items: lines.map((l) => ({ product_id: l.product.id, qty: l.line.qty, size: l.line.size ?? null })),
   };
 
-  const { data, error } = await supabase.rpc("create_order", payload);
-  if (error) {
+  let res: { data: unknown; error: unknown };
+  try {
+    res = await withTimeout(Promise.resolve(supabase.rpc("create_order", payload)));
+  } catch (timeout) {
+    throw timeout instanceof Error ? timeout : new Error("We couldn't reach the store. Please try again.");
+  }
+  if (res.error) {
     throw new Error("We couldn't reach the store to place your order. Please try again.");
   }
 
-  const result = data as RpcResult;
+  const result = res.data as RpcResult;
   if (!result?.success || !result.order) {
     throw new Error(result?.error ?? "We couldn't place your order. Please try again.");
   }
+
+  // Stock was just decremented server-side — drop the cached catalogue so the
+  // shopper's next view reflects the new stock (and any now-sold-out item).
+  invalidateProducts();
 
   // Server owns id + validated totals; attach the customer + a timestamp.
   return { ...result.order, customer, createdAt: new Date().toISOString() };

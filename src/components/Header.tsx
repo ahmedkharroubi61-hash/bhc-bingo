@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useStore } from "../context/StoreContext";
+import { useAuth } from "../context/AuthContext";
 import { useCategoryNav } from "../lib/useCategoryNav";
 import { useProducts } from "../lib/useProducts";
 import { searchProducts } from "../lib/search";
@@ -9,6 +10,7 @@ import { IconSearch, IconUser, IconHeart, IconCart, IconMenu } from "./icons";
 
 export function Header() {
   const { cartCount, wishlist, openDrawer } = useStore();
+  const { user } = useAuth();
   const navCategories = useCategoryNav();
   const products = useProducts();
   const navigate = useNavigate();
@@ -93,14 +95,18 @@ export function Header() {
             </div>
 
             <Link className="brand" to="/" aria-label="BHC Bingo — home">
-              <span className="brand-wordmark">BHC BINGO</span>
+              <img className="brand-logo" src="/img/logo.png" alt="" width={343} height={283} />
+              <span className="brand-name">BINGO</span>
             </Link>
 
             <div className="nav-actions">
               <button className="icon-btn nav-search" type="button" aria-label="Search" aria-expanded={openSearch} onClick={() => setOpenSearch((v) => !v)}>
                 <IconSearch />
               </button>
-              <Link className="icon-btn nav-account" to="/account" aria-label="Account"><IconUser /></Link>
+              <Link className="icon-btn nav-account" to="/account" aria-label={user ? "My account (signed in)" : "Account"} title={user ? user.email : "Sign in"}>
+                <IconUser />
+                {user ? <span className="nav-account-dot" aria-hidden="true" /> : null}
+              </Link>
               <Link className="icon-btn nav-wishlist" to="/wishlist" aria-label={`Wishlist, ${wishlist.length} items`}>
                 <IconHeart size={22} />
                 {wishlist.length > 0 ? <span className="badge" key={wishlist.length} aria-hidden="true">{wishlist.length}</span> : null}
