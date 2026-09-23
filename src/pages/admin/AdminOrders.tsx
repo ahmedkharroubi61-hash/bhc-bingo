@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { adminListOrders, adminSetOrderStatus, type AdminOrder, type OrderStatus } from "../../lib/admin";
+import { adminListOrders, adminSetOrderStatus, adminDeleteOrder, type AdminOrder, type OrderStatus } from "../../lib/admin";
 import { formatPrice } from "../../lib/format";
 
 const STATUS_LABEL: Record<OrderStatus, string> = {
@@ -55,6 +55,14 @@ export function AdminOrders() {
   const setStatus = async (o: AdminOrder, status: OrderStatus) => {
     setOrders((list) => list?.map((x) => (x.id === o.id ? { ...x, status } : x)) ?? null);
     try { await adminSetOrderStatus(o.id, status); } catch { load(); }
+  };
+
+  const deleteOrder = async (o: AdminOrder) => {
+    if (!window.confirm(`Permanently delete cancelled order ${o.id}? This cannot be undone.`)) return;
+    const prev = orders;
+    setOrders((list) => list?.filter((x) => x.id !== o.id) ?? null);
+    try { await adminDeleteOrder(o.id); }
+    catch (e) { setOrders(prev); window.alert(e instanceof Error ? e.message : "Delete failed."); }
   };
 
   if (error) return <div className="admin-page"><p className="admin-error">{error}</p></div>;
@@ -137,6 +145,9 @@ export function AdminOrders() {
                       <button type="button" className="admin-btn sm" disabled={o.status === "confirmed"} onClick={() => setStatus(o, "confirmed")}>Mark confirmed</button>
                       <button type="button" className="admin-btn sm" disabled={o.status === "received"} onClick={() => setStatus(o, "received")}>Mark received</button>
                       <button type="button" className="admin-btn sm danger" disabled={o.status === "cancelled"} onClick={() => setStatus(o, "cancelled")}>Cancel order</button>
+                      {o.status === "cancelled" ? (
+                        <button type="button" className="admin-btn sm danger admin-btn-del" onClick={() => deleteOrder(o)}>Delete order</button>
+                      ) : null}
                     </div>
                   </div>
                 ) : null}

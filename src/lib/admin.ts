@@ -253,3 +253,12 @@ export async function adminSetOrderStatus(id: string, status: OrderStatus): Prom
   const { error } = await sb.from("orders").update({ status }).eq("id", id);
   if (error) throw new Error(error.message);
 }
+
+/** Permanently delete a cancelled order (admin-gated; cancelled-only, server-enforced). */
+export async function adminDeleteOrder(id: string): Promise<void> {
+  const sb = assertBackend();
+  const { data, error } = await sb.rpc("admin_delete_cancelled_order", { p_id: id });
+  if (error) throw new Error(error.message);
+  const result = data as { success?: boolean; error?: string } | null;
+  if (!result?.success) throw new Error(result?.error ?? "Could not delete the order.");
+}

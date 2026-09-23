@@ -1491,6 +1491,8 @@ body.admin-mode { background: var(--adm-bg); }
 .admin-btn-primary:hover { background: var(--adm-accent-deep); border-color: var(--adm-accent-deep); }
 .admin-btn-block { width: 100%; justify-content: center; padding: 12px; }
 .admin-btn.danger, .admin-link-btn.danger { color: var(--adm-neg); }
+.admin-btn-del { border-color: var(--adm-neg); background: var(--adm-neg-soft); }
+.admin-btn-del:hover { background: var(--adm-neg); color: #fff; border-color: var(--adm-neg); }
 .admin-btn:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
 .admin-link-btn { background: none; border: none; cursor: pointer; color: var(--adm-accent); font: inherit; font-size: .84rem; font-weight: 600; padding: 4px 6px; }
 .admin-link-btn:hover { text-decoration: underline; }
