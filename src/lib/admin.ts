@@ -16,6 +16,7 @@ export interface AdminProduct {
   alt: string;
   stock: number;
   active: boolean;
+  heroRank: number | null;
   rating: number;
   ratingCount: number;
   tags: string[];
@@ -83,7 +84,7 @@ function makeProductId(title: string): string {
 interface ProductRow {
   id: string; brand: string; title: string; category: CategorySlug;
   price_millimes: number; old_price_millimes: number | null;
-  image: string; alt: string; stock: number; active: boolean;
+  image: string; alt: string; stock: number; active: boolean; hero_rank: number | null;
   rating: number; rating_count: number; tags: string[] | null;
   description: string | null; how_to_use: string | null; ingredients: string | null;
 }
@@ -92,7 +93,7 @@ function mapProduct(r: ProductRow): AdminProduct {
   return {
     id: r.id, brand: r.brand, title: r.title, category: r.category,
     priceMillimes: r.price_millimes, oldPriceMillimes: r.old_price_millimes,
-    image: r.image, alt: r.alt, stock: r.stock, active: r.active,
+    image: r.image, alt: r.alt, stock: r.stock, active: r.active, heroRank: r.hero_rank ?? null,
     rating: Number(r.rating), ratingCount: r.rating_count, tags: r.tags ?? [],
     description: r.description ?? "", howToUse: r.how_to_use ?? "", ingredients: r.ingredients ?? "",
   };
@@ -159,6 +160,14 @@ export async function adminSetStock(id: string, stock: number): Promise<void> {
 export async function adminSetActive(id: string, active: boolean): Promise<void> {
   const sb = assertBackend();
   const { error } = await sb.from("products").update({ active }).eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+/** Set (or clear) a product's homepage-hero priority. null = not featured. */
+export async function adminSetHeroRank(id: string, heroRank: number | null): Promise<void> {
+  const sb = assertBackend();
+  const value = heroRank === null || Number.isNaN(heroRank) ? null : Math.max(1, Math.round(heroRank));
+  const { error } = await sb.from("products").update({ hero_rank: value }).eq("id", id);
   if (error) throw new Error(error.message);
 }
 

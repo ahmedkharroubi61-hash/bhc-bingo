@@ -1638,6 +1638,9 @@ body.admin-mode { background: var(--adm-bg); }
 .admin-stock-input { width: 68px; text-align: center; font-family: var(--sans); font-size: .9rem; font-weight: 700; padding: 7px 4px; border: 1px solid var(--adm-line-2); border-radius: 9px; background: #fff; color: var(--adm-ink); }
 .admin-stock-input:focus { outline: none; border-color: var(--adm-accent); box-shadow: 0 0 0 4px rgba(166,72,43,.10); }
 .admin-stock-input.zero { border-color: var(--adm-neg); color: var(--adm-neg); background: var(--adm-neg-soft); }
+.admin-hero-input { width: 54px; }
+.admin-hero-input::placeholder { color: var(--adm-mute); font-weight: 400; }
+.admin-hero-input.on { border-color: var(--adm-accent); color: var(--adm-accent-deep); background: var(--adm-accent-soft); }
 .admin-sold-link { font-weight: 700; color: var(--adm-accent); }
 .admin-status-toggle { font-family: var(--sans); font-size: .74rem; font-weight: 700; padding: 5px 12px; border-radius: 999px; border: 1px solid transparent; cursor: pointer; }
 .admin-status-toggle.on { background: var(--adm-pos-soft); color: var(--adm-pos); }

@@ -27,7 +27,7 @@ type Row = {
   id: string; brand: string; title: string; category: CategorySlug;
   price_millimes: number; old_price_millimes: number | null;
   rating: number; rating_count: number; image: string; alt: string; tags: ProductTag[];
-  stock?: number | null; active?: boolean | null;
+  stock?: number | null; active?: boolean | null; hero_rank?: number | null;
   description?: string | null; how_to_use?: string | null; ingredients?: string | null;
   sizes?: SizeRow[] | null;
 };
@@ -42,6 +42,7 @@ function mapRow(r: Row): Product {
     image: r.image, alt: r.alt, tags: r.tags ?? [],
     stock: r.stock ?? undefined,
     active: r.active ?? undefined,
+    heroRank: r.hero_rank ?? undefined,
     description: r.description ?? undefined,
     howToUse: r.how_to_use ?? undefined,
     ingredients: r.ingredients ?? undefined,

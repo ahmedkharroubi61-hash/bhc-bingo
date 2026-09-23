@@ -124,7 +124,12 @@ export function Home() {
   const by = (t: ProductTag): Product[] => (products ?? []).filter((p) => p.tags.includes(t));
 
   const feats = by("featured");
-  const heroItems = (feats.length ? feats : (products ?? [])).slice(0, 6);
+  // Admin-chosen homepage hero: products with a heroRank, lowest first. Falls
+  // back to the "featured" tag, then to the general catalogue.
+  const heroRanked = (products ?? [])
+    .filter((p) => typeof p.heroRank === "number")
+    .sort((a, b) => (a.heroRank as number) - (b.heroRank as number));
+  const heroItems = (heroRanked.length ? heroRanked : feats.length ? feats : (products ?? [])).slice(0, 6);
   const grid = (feats.length >= 6 ? feats : (products ?? [])).slice(0, 6);
   const tabItems = by(tab).slice(0, 6);
 

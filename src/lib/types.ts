@@ -31,6 +31,8 @@ export interface Product {
   stock?: number;
   /** Whether the product is listed on the storefront (admin toggle). */
   active?: boolean;
+  /** Homepage hero priority: undefined = not featured; lower number shows first. */
+  heroRank?: number;
   /** Optional size variants; when present, a size must be chosen before adding to cart. */
   sizes?: ProductSize[];
   /** Editorial detail-page content (attached by the repository from productContent). */

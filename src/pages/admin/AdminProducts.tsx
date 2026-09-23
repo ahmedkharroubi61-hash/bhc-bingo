@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   adminListProducts, adminListOrders, adminSetStock, adminSetActive,
-  adminDeleteProduct, type AdminProduct,
+  adminSetHeroRank, adminDeleteProduct, type AdminProduct,
 } from "../../lib/admin";
 import { formatPrice } from "../../lib/format";
 import { ProductForm } from "./ProductForm";
@@ -58,6 +58,12 @@ export function AdminProducts() {
     try { await adminSetActive(p.id, !p.active); } catch { load(); }
   };
 
+  const onHeroRankCommit = async (p: AdminProduct, next: number | null) => {
+    if (next === p.heroRank) return;
+    setProducts((list) => list?.map((x) => (x.id === p.id ? { ...x, heroRank: next } : x)) ?? null);
+    try { await adminSetHeroRank(p.id, next); } catch { load(); }
+  };
+
   const onDelete = async (p: AdminProduct) => {
     if (!window.confirm(`Delete “${p.title}”? This cannot be undone.`)) return;
     try { await adminDeleteProduct(p.id); await load(); }
@@ -91,6 +97,7 @@ export function AdminProducts() {
               <tr>
                 <th>Product</th><th>Category</th><th>Price</th>
                 <th className="ta-c">Stock</th><th className="ta-c">Sold</th>
+                <th className="ta-c" title="Homepage hero order — lower shows first, blank hides">Homepage</th>
                 <th className="ta-c">Status</th><th className="ta-r">Actions</th>
               </tr>
             </thead>
@@ -117,6 +124,7 @@ export function AdminProducts() {
                       ? <Link className="admin-sold-link" to={`/admin/orders?product=${p.id}`} title="View orders for this product">{soldByProduct.get(p.id)}</Link>
                       : <span className="admin-muted">0</span>}
                   </td>
+                  <td className="ta-c"><HeroRankCell product={p} onCommit={onHeroRankCommit} /></td>
                   <td className="ta-c">
                     <button
                       type="button"
@@ -133,7 +141,7 @@ export function AdminProducts() {
                   </td>
                 </tr>
               ))}
-              {visible.length === 0 ? <tr><td colSpan={7} className="admin-muted ta-c">No products match “{query}”.</td></tr> : null}
+              {visible.length === 0 ? <tr><td colSpan={8} className="admin-muted ta-c">No products match “{query}”.</td></tr> : null}
             </tbody>
           </table>
         </div>
@@ -147,6 +155,29 @@ export function AdminProducts() {
         />
       ) : null}
     </div>
+  );
+}
+
+/** Inline homepage-hero priority. Blank = not featured; a number = order (1 first). */
+function HeroRankCell({ product, onCommit }: { product: AdminProduct; onCommit: (p: AdminProduct, n: number | null) => void }) {
+  const [val, setVal] = useState(product.heroRank == null ? "" : String(product.heroRank));
+  useEffect(() => { setVal(product.heroRank == null ? "" : String(product.heroRank)); }, [product.heroRank]);
+  const commit = () => {
+    const trimmed = val.trim();
+    onCommit(product, trimmed === "" ? null : parseInt(trimmed, 10));
+  };
+  return (
+    <input
+      className={`admin-stock-input admin-hero-input${product.heroRank != null ? " on" : ""}`}
+      type="number" min={1} inputMode="numeric" placeholder="—"
+      value={val}
+      onChange={(e) => setVal(e.target.value)}
+      onFocus={(e) => e.target.select()}
+      onBlur={commit}
+      onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }}
+      aria-label={`Homepage priority for ${product.title}`}
+      title="Homepage hero order — lower shows first, blank hides"
+    />
   );
 }
 
