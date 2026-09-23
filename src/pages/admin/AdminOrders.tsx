@@ -93,8 +93,8 @@ export function AdminOrders() {
                 <button type="button" className="admin-order-top" onClick={() => setExpanded(expanded === o.id ? null : o.id)} aria-expanded={expanded === o.id}>
                   <span className="admin-order-id">{o.id}</span>
                   <span className="admin-order-cust">
-                    <strong>{o.customer.name}</strong>
-                    <span className="admin-order-meta">{o.customer.city} · {o.customer.phone}</span>
+                    <strong>{o.customer.name}{o.fulfillment === "pickup" ? <span className="admin-pickup-tag">Pickup</span> : null}</strong>
+                    <span className="admin-order-meta">{o.fulfillment === "pickup" ? "In-store pickup" : o.customer.city} · {o.customer.phone}</span>
                   </span>
                   <span className="admin-order-when">{formatDate(o.createdAt)}</span>
                   <span className="admin-order-count">{o.items.reduce((n, i) => n + i.qty, 0)} items</span>
@@ -119,12 +119,15 @@ export function AdminOrders() {
                         </div>
                       </div>
                       <div>
-                        <h3 className="admin-detail-h">Delivery</h3>
+                        <h3 className="admin-detail-h">{o.fulfillment === "pickup" ? "Pickup" : "Delivery"}</h3>
                         <p className="admin-detail-addr">
                           <strong>{o.customer.name}</strong><br />
                           {o.customer.phone}<br />
-                          {o.customer.address}<br />
-                          {o.customer.city}
+                          {o.fulfillment === "pickup" ? (
+                            <em>Collecting in store</em>
+                          ) : (
+                            <>{o.customer.address}<br />{o.customer.city}</>
+                          )}
                         </p>
                         {o.notes ? <p className="admin-detail-notes"><em>Note:</em> {o.notes}</p> : null}
                       </div>

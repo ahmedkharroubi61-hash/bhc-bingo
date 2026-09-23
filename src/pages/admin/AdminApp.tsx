@@ -5,10 +5,12 @@ import { AdminLogin } from "./AdminLogin";
 import { AdminDashboard } from "./AdminDashboard";
 import { AdminProducts } from "./AdminProducts";
 import { AdminOrders } from "./AdminOrders";
-import { IconGrid, IconBox, IconReceipt, IconExternal } from "./adminIcons";
+import { AdminPos } from "./AdminPos";
+import { IconGrid, IconBox, IconReceipt, IconExternal, IconRegister } from "./adminIcons";
 
 const NAV = [
   { to: "/admin", label: "Dashboard", end: true, icon: IconGrid },
+  { to: "/admin/pos", label: "New sale", end: false, icon: IconRegister },
   { to: "/admin/products", label: "Stock & Products", end: false, icon: IconBox },
   { to: "/admin/orders", label: "Orders", end: false, icon: IconReceipt },
 ];
@@ -60,6 +62,7 @@ export function AdminApp() {
       <main className="admin-main">
         <Routes>
           <Route index element={<AdminDashboard />} />
+          <Route path="pos" element={<AdminPos />} />
           <Route path="products" element={<AdminProducts />} />
           <Route path="orders" element={<AdminOrders />} />
           <Route path="*" element={<Navigate to="/admin" replace />} />

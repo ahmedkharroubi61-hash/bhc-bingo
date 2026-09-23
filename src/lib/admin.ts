@@ -1,5 +1,5 @@
 import { supabase } from "./supabase";
-import type { CategorySlug } from "./types";
+import type { CategorySlug, FulfillmentMethod } from "./types";
 
 /* Admin data layer. Every call here relies on the caller already being an
    authenticated admin — the database RLS policies (is_admin()) are the real
@@ -59,6 +59,7 @@ export interface AdminOrder {
   id: string;
   status: OrderStatus;
   createdAt: string;
+  fulfillment: FulfillmentMethod;
   subtotalMillimes: number;
   deliveryMillimes: number;
   totalMillimes: number;
@@ -193,7 +194,7 @@ interface OrderItemRow {
   product_id: string; title: string; unit_millimes: number; qty: number; line_millimes: number;
 }
 interface OrderRow {
-  id: string; status: OrderStatus; created_at: string;
+  id: string; status: OrderStatus; created_at: string; fulfillment: FulfillmentMethod | null;
   subtotal_millimes: number; delivery_millimes: number; total_millimes: number;
   customer_name: string; customer_phone: string; customer_address: string; customer_city: string;
   notes: string | null; order_items: OrderItemRow[] | null;
@@ -202,6 +203,7 @@ interface OrderRow {
 function mapOrder(r: OrderRow): AdminOrder {
   return {
     id: r.id, status: r.status, createdAt: r.created_at,
+    fulfillment: r.fulfillment ?? "delivery",
     subtotalMillimes: r.subtotal_millimes, deliveryMillimes: r.delivery_millimes,
     totalMillimes: r.total_millimes,
     customer: { name: r.customer_name, phone: r.customer_phone, address: r.customer_address, city: r.customer_city },

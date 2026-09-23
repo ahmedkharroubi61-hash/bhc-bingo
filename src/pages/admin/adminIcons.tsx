@@ -33,3 +33,9 @@ export function IconExternal({ size = 15 }: IconProps) {
 export function IconLock({ size = 16 }: IconProps) {
   return (<svg {...base(size)}><rect x="4" y="10" width="16" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>);
 }
+export function IconRegister({ size = 18 }: IconProps) {
+  return (<svg {...base(size)}><path d="M3 21h18" /><path d="M5 21V9l4-4h6l4 4v12" /><path d="M9 5V3h6v2" /><path d="M9 12h6" /><path d="M9 16h6" /></svg>);
+}
+export function IconPin({ size = 18 }: IconProps) {
+  return (<svg {...base(size)}><path d="M12 21s7-5.5 7-11a7 7 0 0 0-14 0c0 5.5 7 11 7 11z" /><circle cx="12" cy="10" r="2.5" /></svg>);
+}

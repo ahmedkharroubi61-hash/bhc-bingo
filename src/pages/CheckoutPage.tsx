@@ -6,19 +6,24 @@ import { useCartLines } from "../lib/useCartLines";
 import { getMyProfile, saveMyProfile } from "../lib/profile";
 import { formatPrice } from "../lib/format";
 import { SectionHead } from "../components/SectionHead";
-import { WHATSAPP_NUMBER, DELIVERY_FEE_MILLIMES, FREE_DELIVERY_OVER_MILLIMES } from "../lib/config";
+import { StoreMap } from "../components/StoreMap";
+import { WHATSAPP_NUMBER, DELIVERY_FEE_MILLIMES, FREE_DELIVERY_OVER_MILLIMES, STORE } from "../lib/config";
 import { createOrder, getErrorMessage } from "../lib/orders";
-import type { CustomerDetails, Order } from "../lib/types";
+import type { CustomerDetails, FulfillmentMethod, Order } from "../lib/types";
 
 function whatsappHref(order: Order): string {
   const lines = order.items.map((i) => `• ${i.qty}× ${i.title} — ${formatPrice(i.lineTotal)}`).join("\n");
+  const fulfilment =
+    order.fulfillment === "pickup"
+      ? `Pickup in store (${STORE.name})`
+      : `Delivery: ${order.customer.address}, ${order.customer.city}`;
   const msg =
     `New order ${order.id}\n${lines}\n\n` +
     `Subtotal: ${formatPrice(order.subtotal)}\n` +
-    `Delivery: ${order.delivery === 0 ? "Free" : formatPrice(order.delivery)}\n` +
+    `Delivery: ${order.delivery === 0 ? (order.fulfillment === "pickup" ? "Pickup" : "Free") : formatPrice(order.delivery)}\n` +
     `Total: ${formatPrice(order.total)} (Cash on Delivery)\n\n` +
     `Name: ${order.customer.name}\nPhone: ${order.customer.phone}\n` +
-    `Address: ${order.customer.address}, ${order.customer.city}` +
+    fulfilment +
     (order.customer.notes ? `\nNotes: ${order.customer.notes}` : "");
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
 }
@@ -28,7 +33,7 @@ export function CheckoutPage() {
   const { clearCart } = useStore();
   const { user } = useAuth();
   const { lines, subtotal } = useCartLines();
-  const [form, setForm] = useState<CustomerDetails>({ name: "", phone: "", address: "", city: "", notes: "" });
+  const [form, setForm] = useState<CustomerDetails>({ name: "", phone: "", address: "", city: "", notes: "", fulfillment: "delivery" });
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -52,14 +57,20 @@ export function CheckoutPage() {
     return () => { alive = false; };
   }, [user]);
 
-  const delivery = subtotal >= FREE_DELIVERY_OVER_MILLIMES ? 0 : DELIVERY_FEE_MILLIMES;
+  const isPickup = form.fulfillment === "pickup";
+  const delivery = isPickup ? 0 : subtotal >= FREE_DELIVERY_OVER_MILLIMES ? 0 : DELIVERY_FEE_MILLIMES;
   const total = subtotal + delivery;
   const set = (k: keyof CustomerDetails) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
+  const setFulfillment = (fulfillment: FulfillmentMethod) => setForm((f) => ({ ...f, fulfillment }));
 
   const validate = (): boolean => {
-    if (!form.name.trim() || !form.phone.trim() || !form.address.trim() || !form.city.trim()) {
-      setError("Please fill in your name, phone, address and city.");
+    if (!form.name.trim() || !form.phone.trim()) {
+      setError("Please fill in your name and phone number.");
+      return false;
+    }
+    if (!isPickup && (!form.address.trim() || !form.city.trim())) {
+      setError("Please fill in your delivery address and city.");
       return false;
     }
     if (!consent) {
@@ -129,11 +140,34 @@ export function CheckoutPage() {
         <SectionHead idx="—" title="Checkout" meta="Cash on Delivery" />
         <div className="cart-layout">
           <form className="checkout-form" onSubmit={placeOrder} noValidate>
-            <h3 className="summary-h">Delivery details</h3>
+            <h3 className="summary-h">How would you like it?</h3>
+            <div className="fulfil-toggle" role="tablist" aria-label="Delivery method">
+              <button type="button" role="tab" aria-selected={!isPickup}
+                className={`fulfil-opt${!isPickup ? " active" : ""}`} onClick={() => setFulfillment("delivery")}>
+                <span className="fulfil-opt-t">Home delivery</span>
+                <span className="fulfil-opt-s">{subtotal >= FREE_DELIVERY_OVER_MILLIMES ? "Free over 100 DT" : `${formatPrice(DELIVERY_FEE_MILLIMES)} · pay on delivery`}</span>
+              </button>
+              <button type="button" role="tab" aria-selected={isPickup}
+                className={`fulfil-opt${isPickup ? " active" : ""}`} onClick={() => setFulfillment("pickup")}>
+                <span className="fulfil-opt-t">Pickup in store</span>
+                <span className="fulfil-opt-s">Free · pay when you collect</span>
+              </button>
+            </div>
+
+            <h3 className="summary-h" style={{ marginTop: 22 }}>{isPickup ? "Your contact details" : "Delivery details"}</h3>
             <div className="field"><label htmlFor="co-name">Full name <span className="req" aria-hidden="true">*</span></label><input id="co-name" value={form.name} onChange={set("name")} autoComplete="name" required /></div>
             <div className="field"><label htmlFor="co-phone">Phone <span className="req" aria-hidden="true">*</span></label><input id="co-phone" type="tel" value={form.phone} onChange={set("phone")} autoComplete="tel" required /></div>
-            <div className="field"><label htmlFor="co-address">Address <span className="req" aria-hidden="true">*</span></label><input id="co-address" value={form.address} onChange={set("address")} autoComplete="street-address" required /></div>
-            <div className="field"><label htmlFor="co-city">City <span className="req" aria-hidden="true">*</span></label><input id="co-city" value={form.city} onChange={set("city")} autoComplete="address-level2" required /></div>
+            {isPickup ? (
+              <div className="pickup-panel">
+                <p className="pickup-lead">Collect your order at our shop — we'll call <strong>{form.phone || "you"}</strong> when it's ready.</p>
+                <StoreMap height={190} />
+              </div>
+            ) : (
+              <>
+                <div className="field"><label htmlFor="co-address">Address <span className="req" aria-hidden="true">*</span></label><input id="co-address" value={form.address} onChange={set("address")} autoComplete="street-address" required /></div>
+                <div className="field"><label htmlFor="co-city">City <span className="req" aria-hidden="true">*</span></label><input id="co-city" value={form.city} onChange={set("city")} autoComplete="address-level2" required /></div>
+              </>
+            )}
             <div className="field"><label htmlFor="co-notes">Order notes (optional)</label><textarea id="co-notes" rows={3} value={form.notes} onChange={set("notes")} /></div>
 
             <div className="consent-line" style={{ marginTop: 4 }}>
@@ -157,9 +191,9 @@ export function CheckoutPage() {
               </div>
             ))}
             <div className="summary-row"><span>Subtotal</span><span>{formatPrice(subtotal)}</span></div>
-            <div className="summary-row"><span>Delivery</span><span>{delivery === 0 ? "Free" : formatPrice(delivery)}</span></div>
+            <div className="summary-row"><span>{isPickup ? "Pickup in store" : "Delivery"}</span><span>{isPickup ? "Free" : delivery === 0 ? "Free" : formatPrice(delivery)}</span></div>
             <div className="summary-row total"><span>Total</span><span>{formatPrice(total)}</span></div>
-            <p className="note-sm">Pay in cash when your order arrives.</p>
+            <p className="note-sm">{isPickup ? "Pay in cash when you collect your order." : "Pay in cash when your order arrives."}</p>
           </aside>
         </div>
       </div>

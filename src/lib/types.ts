@@ -40,12 +40,16 @@ export interface Product {
   howToUse?: string;
 }
 
+/** How the order reaches the customer. */
+export type FulfillmentMethod = "delivery" | "pickup";
+
 export interface CustomerDetails {
   name: string;
   phone: string;
   address: string;
   city: string;
   notes: string;
+  fulfillment: FulfillmentMethod;
 }
 
 export interface Order {
@@ -57,4 +61,5 @@ export interface Order {
   total: number;
   customer: CustomerDetails;
   method: "COD";
+  fulfillment: FulfillmentMethod;
 }

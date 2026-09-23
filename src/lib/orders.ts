@@ -2,8 +2,19 @@ import { supabase } from "./supabase";
 import { DELIVERY_FEE_MILLIMES, FREE_DELIVERY_OVER_MILLIMES } from "./config";
 import { invalidateProducts } from "./products";
 import { withTimeout } from "./net";
-import type { CustomerDetails, Order } from "./types";
+import type { CustomerDetails, FulfillmentMethod, Order } from "./types";
 import type { ResolvedLine } from "./useCartLines";
+
+/** A normalized order line — the single input both the storefront cart and the
+ *  staff POS build before an order is placed. title/unit are only used by the
+ *  demo fallback and optimistic UI; the server always re-prices from product_id. */
+export interface OrderLineInput {
+  productId: string;
+  qty: number;
+  size: string | null;
+  title: string;
+  unitMillimes: number;
+}
 
 /* Orders repository / service layer.
    - With Supabase configured: calls the create_order() RPC, which re-validates
@@ -19,6 +30,7 @@ interface RpcOrder {
   delivery: number;
   total: number;
   method: "COD";
+  fulfillment?: FulfillmentMethod;
 }
 interface RpcResult {
   success: boolean;
@@ -30,38 +42,41 @@ function newOrderId(): string {
   return "BNG-" + Date.now().toString(36).toUpperCase().slice(-6);
 }
 
-function deliveryFor(subtotal: number): number {
+/** Delivery fee in millimes — free for pickup, and for delivery over the threshold. */
+function deliveryFor(subtotal: number, fulfillment: FulfillmentMethod): number {
+  if (fulfillment === "pickup") return 0;
   return subtotal >= FREE_DELIVERY_OVER_MILLIMES ? 0 : DELIVERY_FEE_MILLIMES;
 }
 
 /** Demo fallback: construct the order client-side (no server validation). */
-function buildLocalOrder(lines: ResolvedLine[], customer: CustomerDetails): Order {
-  const subtotal = lines.reduce((sum, l) => sum + l.lineTotal, 0);
-  const delivery = deliveryFor(subtotal);
+function buildLocalOrder(items: OrderLineInput[], customer: CustomerDetails): Order {
+  const subtotal = items.reduce((sum, i) => sum + i.unitMillimes * i.qty, 0);
+  const delivery = deliveryFor(subtotal, customer.fulfillment);
   return {
     id: newOrderId(),
     createdAt: new Date().toISOString(),
-    items: lines.map((l) => ({
-      title: l.product.title + (l.line.size ? ` — ${l.line.size}` : ""),
-      qty: l.line.qty,
-      lineTotal: l.lineTotal,
+    items: items.map((i) => ({
+      title: i.title + (i.size ? ` — ${i.size}` : ""),
+      qty: i.qty,
+      lineTotal: i.unitMillimes * i.qty,
     })),
     subtotal,
     delivery,
     total: subtotal + delivery,
     customer,
     method: "COD",
+    fulfillment: customer.fulfillment,
   };
 }
 
 /**
- * Place a Cash-on-Delivery order.
- * Resolves to the confirmed Order. Rejects with a user-safe Error when a
- * configured backend refuses the order (e.g. a price/availability mismatch).
+ * Place a Cash-on-Delivery order from normalized lines. Shared by the storefront
+ * checkout and the staff POS. Resolves to the confirmed Order; rejects with a
+ * user-safe Error when a configured backend refuses it (price/stock mismatch).
  */
-export async function createOrder(lines: ResolvedLine[], customer: CustomerDetails): Promise<Order> {
+export async function placeOrder(items: OrderLineInput[], customer: CustomerDetails): Promise<Order> {
   if (!supabase) {
-    return buildLocalOrder(lines, customer);
+    return buildLocalOrder(items, customer);
   }
 
   const payload = {
@@ -71,8 +86,9 @@ export async function createOrder(lines: ResolvedLine[], customer: CustomerDetai
       address: customer.address,
       city: customer.city,
       notes: customer.notes,
+      fulfillment: customer.fulfillment,
     },
-    p_items: lines.map((l) => ({ product_id: l.product.id, qty: l.line.qty, size: l.line.size ?? null })),
+    p_items: items.map((i) => ({ product_id: i.productId, qty: i.qty, size: i.size })),
   };
 
   let res: { data: unknown; error: unknown };
@@ -95,7 +111,19 @@ export async function createOrder(lines: ResolvedLine[], customer: CustomerDetai
   invalidateProducts();
 
   // Server owns id + validated totals; attach the customer + a timestamp.
-  return { ...result.order, customer, createdAt: new Date().toISOString() };
+  return { ...result.order, fulfillment: result.order.fulfillment ?? customer.fulfillment, customer, createdAt: new Date().toISOString() };
+}
+
+/** Place an order from resolved storefront cart lines. */
+export async function createOrder(lines: ResolvedLine[], customer: CustomerDetails): Promise<Order> {
+  const items: OrderLineInput[] = lines.map((l) => ({
+    productId: l.product.id,
+    qty: l.line.qty,
+    size: l.line.size ?? null,
+    title: l.product.title,
+    unitMillimes: l.unitPrice,
+  }));
+  return placeOrder(items, customer);
 }
 
 export function getErrorMessage(error: unknown): string {
