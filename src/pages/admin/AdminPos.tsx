@@ -3,10 +3,9 @@ import { getProducts } from "../../lib/products";
 import { unitPriceFor } from "../../lib/useCartLines";
 import { isOutOfStock } from "../../lib/stock";
 import { formatPrice } from "../../lib/format";
-import { placeOrder, getErrorMessage, type OrderLineInput } from "../../lib/orders";
-import { DELIVERY_FEE_MILLIMES, FREE_DELIVERY_OVER_MILLIMES } from "../../lib/config";
-import type { CustomerDetails, FulfillmentMethod, Order, Product } from "../../lib/types";
-import { IconPin } from "./adminIcons";
+import { createPosSale, getErrorMessage, type OrderLineInput } from "../../lib/orders";
+import { STORE } from "../../lib/config";
+import type { Order, Product } from "../../lib/types";
 
 interface TicketLine {
   product: Product;
@@ -17,15 +16,16 @@ interface TicketLine {
 const keyOf = (l: TicketLine): string => `${l.product.id}|${l.size ?? ""}`;
 const maxFor = (p: Product): number => (typeof p.stock === "number" ? p.stock : Infinity);
 
-const EMPTY_CUSTOMER: CustomerDetails = {
-  name: "", phone: "", address: "", city: "", notes: "", fulfillment: "pickup",
-};
+function ticketDate(iso: string): string {
+  return new Date(iso).toLocaleString("en-GB", {
+    day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit",
+  });
+}
 
 export function AdminPos() {
   const [catalog, setCatalog] = useState<Product[] | null>(null);
   const [query, setQuery] = useState("");
   const [ticket, setTicket] = useState<TicketLine[]>([]);
-  const [customer, setCustomer] = useState<CustomerDetails>(EMPTY_CUSTOMER);
   const [placing, setPlacing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<Order | null>(null);
@@ -36,18 +36,13 @@ export function AdminPos() {
   };
   useEffect(loadCatalog, []);
 
-  const isPickup = customer.fulfillment === "pickup";
   const subtotal = ticket.reduce((sum, l) => sum + unitPriceFor(l.product, l.size ?? undefined) * l.qty, 0);
-  const delivery = isPickup ? 0 : subtotal >= FREE_DELIVERY_OVER_MILLIMES ? 0 : DELIVERY_FEE_MILLIMES;
-  const total = subtotal + delivery;
   const itemCount = ticket.reduce((n, l) => n + l.qty, 0);
 
   const results = useMemo(() => {
     const list = catalog ?? [];
     const q = query.trim().toLowerCase();
-    const filtered = q
-      ? list.filter((p) => `${p.brand} ${p.title}`.toLowerCase().includes(q))
-      : list;
+    const filtered = q ? list.filter((p) => `${p.brand} ${p.title}`.toLowerCase().includes(q)) : list;
     return filtered.slice(0, 60);
   }, [catalog, query]);
 
@@ -92,17 +87,9 @@ export function AdminPos() {
     });
   };
 
-  const setField = (field: keyof CustomerDetails) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-    setCustomer((c) => ({ ...c, [field]: e.target.value }));
-  const setFulfillment = (fulfillment: FulfillmentMethod) => setCustomer((c) => ({ ...c, fulfillment }));
-
-  const place = async () => {
+  const completeSale = async () => {
     if (placing) return;
-    if (ticket.length === 0) { setError("Add at least one product to the ticket."); return; }
-    if (!customer.name.trim() || !customer.phone.trim()) { setError("Enter the customer's name and phone."); return; }
-    if (!isPickup && (!customer.address.trim() || !customer.city.trim())) {
-      setError("Enter the delivery address and city, or switch to pickup."); return;
-    }
+    if (ticket.length === 0) { setError("Add at least one product."); return; }
     setError(null);
     setPlacing(true);
     const items: OrderLineInput[] = ticket.map((l) => ({
@@ -113,10 +100,9 @@ export function AdminPos() {
       unitMillimes: unitPriceFor(l.product, l.size ?? undefined),
     }));
     try {
-      const order = await placeOrder(items, customer);
+      const order = await createPosSale(items);
       setDone(order);
       setTicket([]);
-      setCustomer(EMPTY_CUSTOMER);
     } catch (err) {
       setError(getErrorMessage(err));
     } finally {
@@ -128,23 +114,46 @@ export function AdminPos() {
     setDone(null);
     setError(null);
     setQuery("");
-    loadCatalog(); // stock changed server-side — refresh
+    loadCatalog(); // stock changed — refresh
   };
 
   if (done) {
     return (
       <div className="admin-page">
-        <div className="pos-done">
+        <div className="pos-done no-print">
           <div className="pos-done-check" aria-hidden="true">✓</div>
-          <h1 className="admin-h1">Sale placed</h1>
-          <p className="admin-sub">Order <strong>{done.id}</strong> · {done.fulfillment === "pickup" ? "In-store pickup" : "Home delivery"}</p>
-          <div className="pos-done-total">{formatPrice(done.total)} <span>Cash on {done.fulfillment === "pickup" ? "pickup" : "delivery"}</span></div>
-          <ul className="pos-done-items">
+          <h1 className="admin-h1">Sale complete</h1>
+          <p className="admin-sub">Ticket <strong>{done.id}</strong> · stock updated</p>
+        </div>
+
+        {/* Printable ticket */}
+        <div className="pos-receipt" id="pos-receipt">
+          <div className="rcpt-head">
+            <div className="rcpt-store">{STORE.name}</div>
+            <div className="rcpt-sub">{STORE.area}</div>
+          </div>
+          <div className="rcpt-meta">
+            <span>Ticket {done.id}</span>
+            <span>{ticketDate(done.createdAt)}</span>
+          </div>
+          <div className="rcpt-rule" />
+          <ul className="rcpt-items">
             {done.items.map((i, n) => (
-              <li key={n}><span>{i.qty}× {i.title}</span><span>{formatPrice(i.lineTotal)}</span></li>
+              <li key={n}>
+                <span className="rcpt-q">{i.qty}×</span>
+                <span className="rcpt-t">{i.title}</span>
+                <span className="rcpt-p">{formatPrice(i.lineTotal)}</span>
+              </li>
             ))}
           </ul>
-          <button type="button" className="admin-btn primary" onClick={newSale}>New sale</button>
+          <div className="rcpt-rule" />
+          <div className="rcpt-total"><span>TOTAL</span><span>{formatPrice(done.total)}</span></div>
+          <div className="rcpt-foot">Paid in cash · Thank you!</div>
+        </div>
+
+        <div className="pos-done-actions no-print">
+          <button type="button" className="admin-btn primary" onClick={() => window.print()}>Print ticket</button>
+          <button type="button" className="admin-btn" onClick={newSale}>New sale</button>
         </div>
       </div>
     );
@@ -155,7 +164,7 @@ export function AdminPos() {
       <header className="admin-head">
         <div>
           <h1 className="admin-h1">New sale</h1>
-          <p className="admin-sub">Ring up a walk-in or phone order — same stock, prices and orders as the shop.</p>
+          <p className="admin-sub">Pick products to sell in store — completing the sale removes them from stock and prints a ticket.</p>
         </div>
       </header>
 
@@ -234,39 +243,14 @@ export function AdminPos() {
             </div>
           )}
 
-          <div className="pos-fulfil" role="tablist" aria-label="Fulfilment">
-            <button type="button" role="tab" aria-selected={isPickup} className={`pos-fulfil-opt${isPickup ? " active" : ""}`} onClick={() => setFulfillment("pickup")}>
-              <IconPin size={15} /> Pickup
-            </button>
-            <button type="button" role="tab" aria-selected={!isPickup} className={`pos-fulfil-opt${!isPickup ? " active" : ""}`} onClick={() => setFulfillment("delivery")}>
-              Delivery
-            </button>
-          </div>
-
-          <div className="pos-cust">
-            <div className="pos-cust-row">
-              <input placeholder="Customer name *" value={customer.name} onChange={setField("name")} autoComplete="off" />
-              <input placeholder="Phone *" type="tel" value={customer.phone} onChange={setField("phone")} autoComplete="off" />
-            </div>
-            {!isPickup ? (
-              <div className="pos-cust-row">
-                <input placeholder="Address *" value={customer.address} onChange={setField("address")} autoComplete="off" />
-                <input placeholder="City *" value={customer.city} onChange={setField("city")} autoComplete="off" />
-              </div>
-            ) : null}
-            <input className="pos-cust-notes" placeholder="Notes (optional)" value={customer.notes} onChange={setField("notes")} autoComplete="off" />
-          </div>
-
           <div className="pos-totals">
-            <div className="pos-tot-row"><span>Subtotal</span><span>{formatPrice(subtotal)}</span></div>
-            <div className="pos-tot-row"><span>{isPickup ? "Pickup" : "Delivery"}</span><span>{delivery === 0 ? "Free" : formatPrice(delivery)}</span></div>
-            <div className="pos-tot-row grand"><span>Total (COD)</span><span>{formatPrice(total)}</span></div>
+            <div className="pos-tot-row grand"><span>Total</span><span>{formatPrice(subtotal)}</span></div>
           </div>
 
           {error ? <p className="admin-error pos-error" role="alert">{error}</p> : null}
 
-          <button type="button" className="admin-btn primary pos-place" onClick={place} disabled={placing || ticket.length === 0}>
-            {placing ? "Placing…" : `Place order · ${formatPrice(total)}`}
+          <button type="button" className="admin-btn primary pos-place" onClick={completeSale} disabled={placing || ticket.length === 0}>
+            {placing ? "Completing…" : `Complete sale · ${formatPrice(subtotal)}`}
           </button>
         </aside>
       </div>

@@ -114,6 +114,40 @@ export async function placeOrder(items: OrderLineInput[], customer: CustomerDeta
   return { ...result.order, fulfillment: result.order.fulfillment ?? customer.fulfillment, customer, createdAt: new Date().toISOString() };
 }
 
+/**
+ * In-store POS sale (admin only). Records the sale + decrements stock via the
+ * create_pos_sale RPC — no delivery, no customer details required. Returns a
+ * confirmed Order for the printable ticket.
+ */
+export async function createPosSale(items: OrderLineInput[]): Promise<Order> {
+  const customer: CustomerDetails = {
+    name: "Walk-in", phone: "", address: "", city: "", notes: "", fulfillment: "pickup",
+  };
+  if (!supabase) {
+    return { ...buildLocalOrder(items, customer), delivery: 0 };
+  }
+
+  const payload = { p_items: items.map((i) => ({ product_id: i.productId, qty: i.qty, size: i.size })) };
+
+  let res: { data: unknown; error: unknown };
+  try {
+    res = await withTimeout(Promise.resolve(supabase.rpc("create_pos_sale", payload)));
+  } catch (timeout) {
+    throw timeout instanceof Error ? timeout : new Error("We couldn't reach the store. Please try again.");
+  }
+  if (res.error) {
+    throw new Error("We couldn't record the sale. Please try again.");
+  }
+
+  const result = res.data as RpcResult;
+  if (!result?.success || !result.order) {
+    throw new Error(result?.error ?? "We couldn't complete the sale. Please try again.");
+  }
+
+  invalidateProducts();
+  return { ...result.order, fulfillment: "pickup", customer, createdAt: new Date().toISOString() };
+}
+
 /** Place an order from resolved storefront cart lines. */
 export async function createOrder(lines: ResolvedLine[], customer: CustomerDetails): Promise<Order> {
   const items: OrderLineInput[] = lines.map((l) => ({

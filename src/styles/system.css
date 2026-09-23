@@ -2156,3 +2156,31 @@ body.admin-mode { background: var(--adm-bg); }
   .pos-grid { grid-template-columns: 1fr; }
   .pos-ticket { position: static; }
 }
+
+/* POS printable ticket */
+.pos-done-actions { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+.pos-receipt {
+  width: 320px; margin: 22px auto 0; background: #fff; color: #111;
+  border: 1px solid var(--adm-line); border-radius: 10px; padding: 22px 22px 18px;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  box-shadow: var(--adm-shadow-sm);
+}
+.rcpt-head { text-align: center; margin-bottom: 12px; }
+.rcpt-store { font-size: 1.02rem; font-weight: 700; letter-spacing: .04em; }
+.rcpt-sub { font-size: .74rem; color: #555; margin-top: 2px; }
+.rcpt-meta { display: flex; justify-content: space-between; font-size: .72rem; color: #555; }
+.rcpt-rule { border-top: 1px dashed #bbb; margin: 10px 0; }
+.rcpt-items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+.rcpt-items li { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; font-size: .8rem; align-items: baseline; }
+.rcpt-q { color: #555; }
+.rcpt-t { line-height: 1.25; }
+.rcpt-p { white-space: nowrap; }
+.rcpt-total { display: flex; justify-content: space-between; font-size: .98rem; font-weight: 700; }
+.rcpt-foot { text-align: center; font-size: .74rem; color: #555; margin-top: 12px; }
+
+@media print {
+  body * { visibility: hidden; }
+  #pos-receipt, #pos-receipt * { visibility: visible; }
+  #pos-receipt { position: absolute; left: 0; top: 0; margin: 0; width: 300px; border: none; box-shadow: none; }
+  .no-print { display: none !important; }
+}
