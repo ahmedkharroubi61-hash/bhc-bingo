@@ -63,15 +63,26 @@ export function AuthForm() {
       setLock(guard.recordFailure());
       return;
     }
-    guard.resetGuard();
-    setLock(guard.getLockStatus());
-    if (result.needsConfirmation) {
-      setNotice("Account created. Check your inbox to confirm your email, then sign in.");
-      setMode("signin");
-      setPassword("");
+
+    if (mode === "signin") {
+      // A real sign-in — clear the guard. The AuthProvider flips `user` and
+      // AccountPage swaps this form out for the dashboard.
+      guard.resetGuard();
+      setLock(guard.getLockStatus());
+      return;
     }
-    // On a successful sign-in the AuthProvider flips `user`, and AccountPage
-    // swaps this form out for the dashboard — no navigation needed here.
+
+    // Sign-up: count every attempt so the SAME email can't be submitted over
+    // and over (Supabase returns a fake success for an already-registered email
+    // to avoid enumeration, so a null error can't be trusted to throttle).
+    setLock(guard.recordFailure());
+    setNotice(
+      result.needsConfirmation
+        ? "Account created. Check your inbox to confirm your email, then sign in."
+        : "Account created — you can sign in now."
+    );
+    setMode("signin");
+    setPassword("");
   };
 
   return (
