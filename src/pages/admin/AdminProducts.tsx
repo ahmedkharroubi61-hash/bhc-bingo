@@ -47,6 +47,16 @@ export function AdminProducts() {
 
   const outOfStock = products?.filter((p) => p.stock === 0).length ?? 0;
 
+  // Distinct existing brands + size labels, for the pick-or-type lists in the form.
+  const brandOptions = useMemo(
+    () => Array.from(new Set((products ?? []).map((p) => p.brand).filter(Boolean))).sort((a, b) => a.localeCompare(b)),
+    [products],
+  );
+  const sizeOptions = useMemo(
+    () => Array.from(new Set((products ?? []).flatMap((p) => p.sizes.map((s) => s.label)).filter(Boolean))).sort((a, b) => a.localeCompare(b)),
+    [products],
+  );
+
   const onStockCommit = async (p: AdminProduct, next: number) => {
     if (next === p.stock || Number.isNaN(next)) return;
     setProducts((list) => list?.map((x) => (x.id === p.id ? { ...x, stock: Math.max(0, next) } : x)) ?? null);
@@ -150,6 +160,8 @@ export function AdminProducts() {
       {editing ? (
         <ProductForm
           product={editing.mode === "edit" ? editing.product : null}
+          brandOptions={brandOptions}
+          sizeOptions={sizeOptions}
           onClose={() => setEditing(null)}
           onSaved={async () => { setEditing(null); await load(); }}
         />

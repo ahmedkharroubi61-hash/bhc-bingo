@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { adminAiProductContent, adminCreateProduct, adminUpdateProduct, adminUploadProductImage, type AdminProduct, type AdminProductInput } from "../../lib/admin";
-import type { CategorySlug } from "../../lib/types";
+import type { CategorySlug, ProductSize } from "../../lib/types";
+
+/** A size row while editing — price kept as an editable dinar string. */
+interface SizeDraft { label: string; price: string }
 
 const CATEGORIES: { slug: CategorySlug; name: string }[] = [
   { slug: "skincare", name: "Skincare" }, { slug: "face", name: "Face Care" },
@@ -22,11 +25,13 @@ function toMillimes(dt: string): number | null {
 
 interface Props {
   product: AdminProduct | null;   // null = create
+  brandOptions: string[];         // existing brands, for the pick-or-type list
+  sizeOptions: string[];          // existing size labels, for the pick-or-type list
   onClose: () => void;
   onSaved: () => void;
 }
 
-export function ProductForm({ product, onClose, onSaved }: Props) {
+export function ProductForm({ product, brandOptions, sizeOptions, onClose, onSaved }: Props) {
   const isEdit = !!product;
   const [title, setTitle] = useState(product?.title ?? "");
   const [brand, setBrand] = useState(product?.brand ?? "");
@@ -36,6 +41,9 @@ export function ProductForm({ product, onClose, onSaved }: Props) {
   const [image, setImage] = useState(product?.image ?? "");
   const [stock, setStock] = useState(String(product?.stock ?? 0));
   const [active, setActive] = useState(product?.active ?? true);
+  const [sizes, setSizes] = useState<SizeDraft[]>(
+    (product?.sizes ?? []).map((s) => ({ label: s.label, price: toDt(s.priceMillimes) })),
+  );
   const [description, setDescription] = useState(product?.description ?? "");
   const [howToUse, setHowToUse] = useState(product?.howToUse ?? "");
   const [ingredients, setIngredients] = useState(product?.ingredients ?? "");
@@ -84,6 +92,11 @@ export function ProductForm({ product, onClose, onSaved }: Props) {
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
+  const addSize = () => setSizes((s) => [...s, { label: "", price: "" }]);
+  const updateSize = (i: number, patch: Partial<SizeDraft>) =>
+    setSizes((s) => s.map((row, n) => (n === i ? { ...row, ...patch } : row)));
+  const removeSize = (i: number) => setSizes((s) => s.filter((_, n) => n !== i));
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (busy || uploading) return;
@@ -92,10 +105,23 @@ export function ProductForm({ product, onClose, onSaved }: Props) {
     if (priceMillimes == null || priceMillimes < 0) { setError("Enter a valid price in dinars."); return; }
     if (!image.trim()) { setError("Please upload a product image."); return; }
 
+    // Keep only complete size rows (a label + a valid price).
+    const parsedSizes: ProductSize[] = [];
+    for (const row of sizes) {
+      if (!row.label.trim() && !row.price.trim()) continue; // skip blank rows
+      const m = toMillimes(row.price);
+      if (!row.label.trim() || m == null || m <= 0) {
+        setError("Each size needs a name and a valid price (or remove the empty row).");
+        return;
+      }
+      parsedSizes.push({ label: row.label.trim(), priceMillimes: m });
+    }
+
     const input: AdminProductInput = {
       title: title.trim(), brand: brand.trim(), category,
       priceMillimes, oldPriceMillimes: oldPrice.trim() ? toMillimes(oldPrice) : null,
       image: image.trim(), stock: Math.max(0, parseInt(stock, 10) || 0), active,
+      sizes: parsedSizes,
       description: description.trim(), howToUse: howToUse.trim(), ingredients: ingredients.trim(),
     };
 
@@ -124,7 +150,11 @@ export function ProductForm({ product, onClose, onSaved }: Props) {
             <input value={title} onChange={(e) => setTitle(e.target.value)} required autoFocus />
           </label>
           <label className="admin-field"><span>Brand</span>
-            <input value={brand} onChange={(e) => setBrand(e.target.value)} required />
+            <input value={brand} onChange={(e) => setBrand(e.target.value)} required
+              list="pf-brands" placeholder="Pick a brand or type a new one" autoComplete="off" />
+            <datalist id="pf-brands">
+              {brandOptions.map((b) => <option key={b} value={b} />)}
+            </datalist>
           </label>
 
           <div className="admin-field-row">
@@ -145,6 +175,37 @@ export function ProductForm({ product, onClose, onSaved }: Props) {
             <label className="admin-field"><span>Old price (DT, optional)</span>
               <input inputMode="decimal" value={oldPrice} onChange={(e) => setOldPrice(e.target.value)} placeholder="for a strike-through" />
             </label>
+          </div>
+
+          <div className="admin-field">
+            <span>Sizes (optional)</span>
+            <p className="admin-upload-hint" style={{ margin: "0 0 8px" }}>
+              Add size variants with their own price. Leave empty for a single-price product.
+              Customers must pick a size before adding to cart.
+            </p>
+            {sizes.length > 0 ? (
+              <div className="pf-sizes">
+                {sizes.map((row, i) => (
+                  <div className="pf-size-row" key={i}>
+                    <input
+                      className="pf-size-label" list="pf-sizes" placeholder="Size (e.g. 50 ml)" autoComplete="off"
+                      value={row.label} onChange={(e) => updateSize(i, { label: e.target.value })}
+                    />
+                    <input
+                      className="pf-size-price" inputMode="decimal" placeholder="Price DT"
+                      value={row.price} onChange={(e) => updateSize(i, { price: e.target.value })}
+                    />
+                    <button type="button" className="pf-size-x" onClick={() => removeSize(i)} aria-label="Remove size">×</button>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+            <button type="button" className="admin-btn sm" style={{ marginTop: 8, alignSelf: "flex-start" }} onClick={addSize}>
+              + Add size
+            </button>
+            <datalist id="pf-sizes">
+              {sizeOptions.map((s) => <option key={s} value={s} />)}
+            </datalist>
           </div>
 
           <div className="admin-field">

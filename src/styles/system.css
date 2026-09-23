@@ -1641,6 +1641,14 @@ body.admin-mode { background: var(--adm-bg); }
 .admin-hero-input { width: 54px; }
 .admin-hero-input::placeholder { color: var(--adm-mute); font-weight: 400; }
 .admin-hero-input.on { border-color: var(--adm-accent); color: var(--adm-accent-deep); background: var(--adm-accent-soft); }
+
+/* Product form: size variants editor */
+.pf-sizes { display: flex; flex-direction: column; gap: 8px; }
+.pf-size-row { display: grid; grid-template-columns: 1fr 110px auto; gap: 8px; align-items: center; }
+.pf-size-row input { font-family: var(--sans); font-size: .92rem; padding: 9px 11px; border: 1px solid var(--adm-line-2); border-radius: 9px; background: #fff; color: var(--adm-ink); width: 100%; }
+.pf-size-row input:focus { outline: none; border-color: var(--adm-accent); box-shadow: 0 0 0 3px rgba(166,72,43,.10); }
+.pf-size-x { border: none; background: none; cursor: pointer; color: var(--adm-mute); font-size: 1.3rem; line-height: 1; padding: 0 4px; }
+.pf-size-x:hover { color: var(--adm-neg); }
 .admin-sold-link { font-weight: 700; color: var(--adm-accent); }
 .admin-status-toggle { font-family: var(--sans); font-size: .74rem; font-weight: 700; padding: 5px 12px; border-radius: 999px; border: 1px solid transparent; cursor: pointer; }
 .admin-status-toggle.on { background: var(--adm-pos-soft); color: var(--adm-pos); }

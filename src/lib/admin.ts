@@ -1,5 +1,5 @@
 import { supabase } from "./supabase";
-import type { CategorySlug, FulfillmentMethod } from "./types";
+import type { CategorySlug, FulfillmentMethod, ProductSize } from "./types";
 
 /* Admin data layer. Every call here relies on the caller already being an
    authenticated admin — the database RLS policies (is_admin()) are the real
@@ -20,6 +20,7 @@ export interface AdminProduct {
   rating: number;
   ratingCount: number;
   tags: string[];
+  sizes: ProductSize[];
   description: string;
   howToUse: string;
   ingredients: string;
@@ -34,6 +35,7 @@ export interface AdminProductInput {
   image: string;
   stock: number;
   active: boolean;
+  sizes: ProductSize[];
   description: string;
   howToUse: string;
   ingredients: string;
@@ -81,11 +83,12 @@ function makeProductId(title: string): string {
   return `${base}-${Math.random().toString(36).slice(2, 6)}`;
 }
 
+interface SizeRow { label: string; price_millimes: number }
 interface ProductRow {
   id: string; brand: string; title: string; category: CategorySlug;
   price_millimes: number; old_price_millimes: number | null;
   image: string; alt: string; stock: number; active: boolean; hero_rank: number | null;
-  rating: number; rating_count: number; tags: string[] | null;
+  rating: number; rating_count: number; tags: string[] | null; sizes: SizeRow[] | null;
   description: string | null; how_to_use: string | null; ingredients: string | null;
 }
 
@@ -95,8 +98,17 @@ function mapProduct(r: ProductRow): AdminProduct {
     priceMillimes: r.price_millimes, oldPriceMillimes: r.old_price_millimes,
     image: r.image, alt: r.alt, stock: r.stock, active: r.active, heroRank: r.hero_rank ?? null,
     rating: Number(r.rating), ratingCount: r.rating_count, tags: r.tags ?? [],
+    sizes: (r.sizes ?? []).map((s) => ({ label: s.label, priceMillimes: s.price_millimes })),
     description: r.description ?? "", howToUse: r.how_to_use ?? "", ingredients: r.ingredients ?? "",
   };
+}
+
+/** Serialize the form's sizes to the DB shape, or null when there are none. */
+function sizesToDb(sizes: ProductSize[]): SizeRow[] | null {
+  const rows = sizes
+    .filter((s) => s.label.trim() && Number.isFinite(s.priceMillimes) && s.priceMillimes > 0)
+    .map((s) => ({ label: s.label.trim(), price_millimes: Math.round(s.priceMillimes) }));
+  return rows.length > 0 ? rows : null;
 }
 
 export async function adminListProducts(): Promise<AdminProduct[]> {
@@ -113,6 +125,7 @@ export async function adminCreateProduct(input: AdminProductInput): Promise<void
     brand: input.brand, title: input.title, category: input.category,
     price_millimes: input.priceMillimes, old_price_millimes: input.oldPriceMillimes,
     image: input.image, alt: input.title, stock: input.stock, active: input.active,
+    sizes: sizesToDb(input.sizes),
     description: input.description || null, how_to_use: input.howToUse || null, ingredients: input.ingredients || null,
   });
   if (error) throw new Error(error.message);
@@ -124,6 +137,7 @@ export async function adminUpdateProduct(id: string, input: AdminProductInput): 
     brand: input.brand, title: input.title, category: input.category,
     price_millimes: input.priceMillimes, old_price_millimes: input.oldPriceMillimes,
     image: input.image, stock: input.stock, active: input.active,
+    sizes: sizesToDb(input.sizes),
     description: input.description || null, how_to_use: input.howToUse || null, ingredients: input.ingredients || null,
   }).eq("id", id);
   if (error) throw new Error(error.message);
