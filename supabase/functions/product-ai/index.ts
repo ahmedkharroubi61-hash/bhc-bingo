@@ -4,7 +4,7 @@
 // Admin-gated; key server-side (GEMINI_API_KEY).
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const MODEL = "gemini-2.0-flash"; // free tier, supports Google Search grounding
+const MODEL = "gemini-3.6-flash"; // free tier, supports Google Search grounding
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
