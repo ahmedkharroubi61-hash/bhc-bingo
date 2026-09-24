@@ -81,6 +81,7 @@ export function Header() {
               </button>
               <nav className="nav-links" aria-label="Primary">
                 <Link to="/category/all">Shop</Link>
+                <Link to="/reservations">Reservations</Link>
                 <Link to="/brands">Our Brands</Link>
                 <button
                   type="button"

@@ -10,6 +10,10 @@ export const BUSINESS_NAME = "BHC Bingo Parapharmacie";
 export const DELIVERY_FEE_MILLIMES = 7000;
 export const FREE_DELIVERY_OVER_MILLIMES = 100000; // free over 100 DT
 
+/** Reservations: the only bookable time slots, and the weekly closed day (0 = Sunday). */
+export const RESERVATION_SLOTS = ["10:00", "15:00"] as const;
+export const RESERVATION_CLOSED_DOW = 0; // Sunday
+
 /** Physical store — used for in-store pickup and the "Visit us" map. */
 export const STORE = {
   name: "Bingo Cosmetics",

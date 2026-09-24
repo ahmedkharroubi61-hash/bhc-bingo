@@ -1651,6 +1651,60 @@ body.admin-mode { background: var(--adm-bg); }
 .pf-size-row input:focus { outline: none; border-color: var(--adm-accent); box-shadow: 0 0 0 3px rgba(166,72,43,.10); }
 .pf-size-x { border: none; background: none; cursor: pointer; color: var(--adm-mute); font-size: 1.3rem; line-height: 1; padding: 0 4px; }
 .pf-size-x:hover { color: var(--adm-neg); }
+
+/* ==========================================================================
+   Split landing (Epic-style entry chooser)
+   ========================================================================== */
+body.split-mode { background: #14110f; }
+.split { position: fixed; inset: 0; display: flex; min-height: 100vh; min-height: 100dvh; background: #14110f; }
+.split-panel {
+  position: relative; flex: 1 1 50%; min-width: 0; overflow: hidden;
+  display: flex; align-items: center; justify-content: center; text-decoration: none; color: #fff;
+  transition: flex-grow .55s cubic-bezier(.22,.61,.36,1);
+}
+.split-bg { position: absolute; inset: 0; background-size: cover; background-position: center; transform: scale(1.06); transition: transform .8s cubic-bezier(.22,.61,.36,1); }
+.split-scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20,17,15,.35), rgba(20,17,15,.74)); transition: background .4s; }
+.split-content { position: relative; z-index: 1; text-align: center; padding: 24px; max-width: 420px; }
+.split-eyebrow { display: block; font-size: .72rem; letter-spacing: .28em; text-transform: uppercase; color: rgba(255,255,255,.82); }
+.split-title { display: block; font-family: var(--serif, Georgia, serif); font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.03; margin: 10px 0; }
+.split-sub { display: block; font-size: .98rem; color: rgba(255,255,255,.86); max-width: 340px; margin: 0 auto; }
+.split-cta { display: inline-block; margin-top: 22px; font-weight: 600; letter-spacing: .03em; border: 1px solid rgba(255,255,255,.6); border-radius: 999px; padding: 11px 22px; transition: background .2s, color .2s, border-color .2s; }
+.split-cta b { margin-left: 6px; }
+.split-panel:hover { flex-grow: 1.4; }
+.split-panel:hover .split-bg { transform: scale(1); }
+.split-panel:hover .split-scrim { background: linear-gradient(180deg, rgba(20,17,15,.22), rgba(20,17,15,.62)); }
+.split-panel:hover .split-cta { background: #fff; color: #14110f; border-color: #fff; }
+.split-panel:focus-visible { outline: 3px solid #80B820; outline-offset: -6px; }
+.split-services .split-bg { transform: scale(1.06) scaleX(-1); }
+.split-services:hover .split-bg { transform: scale(1) scaleX(-1); }
+.split-center { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: 5; pointer-events: none; text-align: center; }
+.split-logo { width: 60px; height: auto; display: block; margin: 0 auto 4px; filter: drop-shadow(0 4px 18px rgba(0,0,0,.55)); }
+.split-brand { font-family: var(--serif, Georgia, serif); font-size: 1.5rem; letter-spacing: .04em; color: #fff; text-shadow: 0 2px 14px rgba(0,0,0,.5); }
+.split-brand i { color: #80B820; font-style: normal; }
+@media (max-width: 760px) {
+  .split { flex-direction: column; position: static; min-height: 100dvh; }
+  .split-panel { flex: 1 1 50%; min-height: 46vh; }
+  .split-panel:hover { flex-grow: 1; }
+  .split-center { display: none; }
+}
+
+/* Reservations: time-slot picker + field hint */
+.rv-slots { display: flex; gap: 10px; }
+.rv-slot { flex: 1; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel-2); font-weight: 600; cursor: pointer; color: inherit; transition: border-color .16s var(--ease), background .16s, box-shadow .16s; }
+.rv-slot:hover { border-color: var(--gold); }
+.rv-slot.active { border-color: var(--gold); background: rgba(128,184,32,.08); box-shadow: 0 0 0 1px var(--gold) inset; }
+.field-hint { display: block; font-size: .8rem; margin-top: 5px; }
+.field-hint.err { color: #b3261e; }
+
+/* Admin: services manager */
+.svc-add { display: flex; gap: 10px; margin-bottom: 18px; max-width: 560px; }
+.svc-add .admin-search { flex: 1; }
+.svc-list { display: flex; flex-direction: column; gap: 8px; max-width: 640px; }
+.svc-row { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; background: var(--adm-panel); border: 1px solid var(--adm-line); border-radius: 12px; padding: 8px 12px; }
+.svc-row.off { opacity: .62; }
+.svc-name { font-family: var(--sans); font-size: .95rem; font-weight: 500; padding: 8px 10px; border: 1px solid transparent; border-radius: 8px; background: transparent; color: var(--adm-ink); width: 100%; }
+.svc-name:hover { border-color: var(--adm-line-2); }
+.svc-name:focus { outline: none; border-color: var(--adm-accent); background: #fff; box-shadow: 0 0 0 3px rgba(166,72,43,.10); }
 .admin-sold-link { font-weight: 700; color: var(--adm-accent); }
 .admin-status-toggle { font-family: var(--sans); font-size: .74rem; font-weight: 700; padding: 5px 12px; border-radius: 999px; border: 1px solid transparent; cursor: pointer; }
 .admin-status-toggle.on { background: var(--adm-pos-soft); color: var(--adm-pos); }

@@ -1,6 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 import { Layout } from "./components/Layout";
+import { SplitLanding } from "./pages/SplitLanding";
 import { Home } from "./pages/Home";
+import { ReservationsPage } from "./pages/ReservationsPage";
 import { Catalog } from "./pages/Catalog";
 import { Brands } from "./pages/Brands";
 import { CartPage } from "./pages/CartPage";
@@ -19,8 +21,12 @@ export default function App() {
       {/* Admin — its own shell (no storefront header/footer), gated by auth. */}
       <Route path="/admin/*" element={<AdminApp />} />
 
+      {/* Entry chooser — full-screen split, its own shell. */}
+      <Route path="/" element={<SplitLanding />} />
+
       <Route element={<Layout />}>
-        <Route index element={<Home />} />
+        <Route path="/shop" element={<Home />} />
+        <Route path="/reservations" element={<ReservationsPage />} />
         <Route path="/category/:slug" element={<Catalog />} />
         <Route path="/brands" element={<Brands />} />
         <Route path="/brand/:brand" element={<Catalog />} />

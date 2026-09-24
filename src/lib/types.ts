@@ -45,6 +45,18 @@ export interface Product {
 /** How the order reaches the customer. */
 export type FulfillmentMethod = "delivery" | "pickup";
 
+/** Reservations (the "Services" side). */
+export type ReservationSlot = "10:00" | "15:00";
+export type ReservationStatus = "received" | "confirmed" | "cancelled";
+export interface ReservationInput {
+  name: string;
+  phone: string;
+  service: string;
+  date: string;   // YYYY-MM-DD
+  slot: ReservationSlot;
+  notes: string;
+}
+
 export interface CustomerDetails {
   name: string;
   phone: string;

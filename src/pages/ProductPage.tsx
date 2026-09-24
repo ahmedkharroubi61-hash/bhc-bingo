@@ -77,7 +77,7 @@ export function ProductPage() {
       <section className="section pdp">
         <div className="container">
           <nav className="breadcrumb" aria-label="Breadcrumb">
-            <Link to="/">Home</Link> <span aria-hidden="true">/</span>{" "}
+            <Link to="/shop">Home</Link> <span aria-hidden="true">/</span>{" "}
             <Link to={`/category/${product.category}`}>{CATEGORY_LABELS[product.category] ?? "Shop"}</Link>{" "}
             <span aria-hidden="true">/</span> <span className="crumb-current">{product.brand}</span>
           </nav>
