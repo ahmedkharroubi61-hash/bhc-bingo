@@ -3,6 +3,7 @@ import { Layout } from "./components/Layout";
 import { SplitLanding } from "./pages/SplitLanding";
 import { Home } from "./pages/Home";
 import { ReservationsPage } from "./pages/ReservationsPage";
+import { ContactPage } from "./pages/ContactPage";
 import { Catalog } from "./pages/Catalog";
 import { Brands } from "./pages/Brands";
 import { CartPage } from "./pages/CartPage";
@@ -36,7 +37,7 @@ export default function App() {
         <Route path="/order-confirmed" element={<OrderConfirmed />} />
         <Route path="/wishlist" element={<WishlistPage />} />
         <Route path="/account" element={<AccountPage />} />
-        <Route path="/contact" element={<Placeholder title="Contact Us" />} />
+        <Route path="/contact" element={<ContactPage />} />
         <Route path="/about" element={<Placeholder title="About Us" />} />
         <Route path="/shipping-returns" element={<Placeholder title="Shipping & Returns" />} />
         <Route path="/legal-notice" element={<Placeholder title="Legal Notice" note="Legal pages are being ported from the previous build next." />} />

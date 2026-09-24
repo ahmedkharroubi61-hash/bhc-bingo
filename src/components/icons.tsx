@@ -11,3 +11,7 @@ export const IconShield = ({ size = 17 }: P) => (<svg {...s(size)}><path d="m9 1
 export const IconLock = ({ size = 17 }: P) => (<svg {...s(size)}><rect x="3" y="11" width="18" height="10" rx="1" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>);
 export const IconTruck = ({ size = 17 }: P) => (<svg {...s(size)}><path d="M3 7h11v8H3zM14 10h4l3 3v2h-7z" /><circle cx="7" cy="17" r="1.6" /><circle cx="17" cy="17" r="1.6" /></svg>);
 export const IconStar = ({ size = 14 }: P) => (<svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z" /></svg>);
+export const IconInstagram = ({ size = 20 }: P) => (<svg {...s(size)}><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="0.9" fill="currentColor" stroke="none" /></svg>);
+export const IconWhatsapp = ({ size = 20 }: P) => (<svg {...s(size)}><path d="M20.5 11.5a8.5 8.5 0 0 1-12.4 7.5L3.5 20l1.1-4.4A8.5 8.5 0 1 1 20.5 11.5z" /><path d="M8.5 9c0 4 2.5 6.5 6.5 6.5.7 0 1.3-.6 1.3-1.1 0-.3-1.6-1.2-1.9-1.2-.4 0-.7.7-1 .7-.6 0-2.6-2-2.6-2.6 0-.3.7-.6.7-1 0-.3-.9-1.9-1.2-1.9-.5 0-1.1.6-1.1 1.3z" /></svg>);
+export const IconPhone = ({ size = 20 }: P) => (<svg {...s(size)}><path d="M4 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L14 12l5 2v4a2 2 0 0 1-2 2A15 15 0 0 1 2 6a2 2 0 0 1 2-2z" /></svg>);
+export const IconPin = ({ size = 20 }: P) => (<svg {...s(size)}><path d="M12 21s7-5.5 7-11a7 7 0 0 0-14 0c0 5.5 7 11 7 11z" /><circle cx="12" cy="10" r="2.5" /></svg>);

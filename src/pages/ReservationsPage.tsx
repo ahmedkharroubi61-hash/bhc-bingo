@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { SectionHead } from "../components/SectionHead";
 import { StoreMap } from "../components/StoreMap";
+import { formatPrice } from "../lib/format";
 import { useAuth } from "../context/AuthContext";
 import { useT } from "../lib/i18n";
 import { getActiveServices, type Service } from "../lib/services";
@@ -107,7 +108,7 @@ export function ReservationsPage() {
                   <label htmlFor="rv-service">{t("Service")} <span className="req" aria-hidden="true">*</span></label>
                   <select id="rv-service" value={form.service} onChange={set("service")} required>
                     <option value="" disabled>{t("Choose a service…")}</option>
-                    {services.map((s) => <option key={s.id} value={s.name}>{s.name}</option>)}
+                    {services.map((s) => <option key={s.id} value={s.name}>{s.name}{s.priceMillimes != null ? ` — ${formatPrice(s.priceMillimes)}` : ""}</option>)}
                   </select>
                 </div>
 

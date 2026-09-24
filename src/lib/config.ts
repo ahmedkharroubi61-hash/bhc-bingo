@@ -1,8 +1,13 @@
 /** Business config. Replace placeholders with the client's real details before launch. */
 
 // WhatsApp number in international format, digits only (country code, no "+" or spaces).
-// Example for Tunisia: "21612345678". Leave empty to hide WhatsApp ordering.
-export const WHATSAPP_NUMBER = "";
+// Tunisia +216 51 828 810.
+export const WHATSAPP_NUMBER = "21651828810";
+/** Human-friendly phone shown in the UI. */
+export const CONTACT_PHONE = "+216 51 828 810";
+/** Social / contact links. */
+export const INSTAGRAM_URL = "https://www.instagram.com/para_bingo/";
+export const INSTAGRAM_HANDLE = "@para_bingo";
 
 export const BUSINESS_NAME = "BHC Bingo Parapharmacie";
 

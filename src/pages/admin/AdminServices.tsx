@@ -3,10 +3,22 @@ import {
   adminListServices, adminCreateService, adminUpdateService, adminDeleteService, type Service,
 } from "../../lib/services";
 
+/** dinar string → millimes ("30" → 30000). Empty → null. */
+function toMillimes(dt: string): number | null {
+  const trimmed = dt.trim();
+  if (!trimmed) return null;
+  const n = parseFloat(trimmed.replace(",", "."));
+  return Number.isFinite(n) ? Math.round(n * 1000) : null;
+}
+function toDt(millimes: number | null): string {
+  return millimes == null ? "" : String(millimes / 1000);
+}
+
 export function AdminServices() {
   const [services, setServices] = useState<Service[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [newName, setNewName] = useState("");
+  const [newPrice, setNewPrice] = useState("");
   const [adding, setAdding] = useState(false);
 
   const load = useCallback(async () => {
@@ -21,7 +33,7 @@ export function AdminServices() {
     if (!name || adding) return;
     setAdding(true);
     const nextSort = (services ?? []).reduce((m, s) => Math.max(m, s.sort), 0) + 1;
-    try { await adminCreateService(name, nextSort); setNewName(""); await load(); }
+    try { await adminCreateService(name, nextSort, toMillimes(newPrice)); setNewName(""); setNewPrice(""); await load(); }
     catch (e) { setError(e instanceof Error ? e.message : "Could not add service."); }
     finally { setAdding(false); }
   };
@@ -30,6 +42,12 @@ export function AdminServices() {
     if (name.trim() === s.name || !name.trim()) return;
     setServices((list) => list?.map((x) => (x.id === s.id ? { ...x, name: name.trim() } : x)) ?? null);
     try { await adminUpdateService(s.id, { name }); } catch { load(); }
+  };
+
+  const reprice = async (s: Service, priceMillimes: number | null) => {
+    if (priceMillimes === s.priceMillimes) return;
+    setServices((list) => list?.map((x) => (x.id === s.id ? { ...x, priceMillimes } : x)) ?? null);
+    try { await adminUpdateService(s.id, { priceMillimes }); } catch { load(); }
   };
 
   const toggleActive = async (s: Service) => {
@@ -56,6 +74,7 @@ export function AdminServices() {
 
       <form className="svc-add" onSubmit={add}>
         <input className="admin-search" placeholder="New service name…" value={newName} onChange={(e) => setNewName(e.target.value)} />
+        <input className="admin-search svc-add-price" inputMode="decimal" placeholder="Price DT (optional)" value={newPrice} onChange={(e) => setNewPrice(e.target.value)} />
         <button type="submit" className="admin-btn admin-btn-primary" disabled={adding || !newName.trim()}>+ Add service</button>
       </form>
 
@@ -68,6 +87,7 @@ export function AdminServices() {
           {services.map((s) => (
             <div className={`svc-row${s.active ? "" : " off"}`} key={s.id}>
               <ServiceName service={s} onCommit={rename} />
+              <ServicePrice service={s} onCommit={reprice} />
               <button
                 type="button"
                 className={`admin-status-toggle${s.active ? " on" : " off"}`}
@@ -96,6 +116,23 @@ function ServiceName({ service, onCommit }: { service: Service; onCommit: (s: Se
       onBlur={() => onCommit(service, val)}
       onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }}
       aria-label={`Service name: ${service.name}`}
+    />
+  );
+}
+
+function ServicePrice({ service, onCommit }: { service: Service; onCommit: (s: Service, m: number | null) => void }) {
+  const [val, setVal] = useState(toDt(service.priceMillimes));
+  useEffect(() => { setVal(toDt(service.priceMillimes)); }, [service.priceMillimes]);
+  return (
+    <input
+      className="svc-price" inputMode="decimal" placeholder="Free"
+      value={val}
+      onChange={(e) => setVal(e.target.value)}
+      onFocus={(e) => e.target.select()}
+      onBlur={() => onCommit(service, toMillimes(val))}
+      onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }}
+      aria-label={`Price (DT) for ${service.name}`}
+      title="Price in DT — leave blank for no set price"
     />
   );
 }
