@@ -1,9 +1,10 @@
 // Supabase Edge Function: product-ai
-// Researches a product on the web via OpenAI (Responses API + web_search tool)
-// and drafts { description, howToUse, ingredients }. Admin-gated; key server-side.
+// Researches a product on the web via Google Gemini (free tier, with Google
+// Search grounding) and drafts { description, howToUse, ingredients }.
+// Admin-gated; key server-side (GEMINI_API_KEY).
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const MODEL = "gpt-4o"; // supports the web_search tool; change to gpt-4o-mini for lower cost
+const MODEL = "gemini-2.0-flash"; // free tier, supports Google Search grounding
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -35,42 +36,38 @@ Deno.serve(async (req: Request) => {
     const { data: isAdmin } = await sb.rpc("is_admin");
     if (isAdmin !== true) return json({ error: "Not authorised." }, 200);
 
-    // 2) Require the OpenAI key (set by the store owner).
-    const key = Deno.env.get("OPENAI_API_KEY");
-    if (!key) return json({ error: "The AI key isn't set up yet. Add OPENAI_API_KEY in Supabase → Edge Functions → Secrets." }, 200);
+    // 2) Require the Gemini key (set by the store owner).
+    const key = Deno.env.get("GEMINI_API_KEY");
+    if (!key) return json({ error: "The AI key isn't set up yet. Add GEMINI_API_KEY in Supabase → Edge Functions → Secrets." }, 200);
 
     const { title, brand, category } = await req.json().catch(() => ({}));
     if (!title || !brand) return json({ error: "Missing product title or brand." }, 200);
 
     const userMsg = `Product: ${title}\nBrand: ${brand}\nCategory: ${category ?? ""}`.trim();
 
-    // 3) OpenAI Responses API with web search.
-    const r = await fetch("https://api.openai.com/v1/responses", {
+    // 3) Gemini generateContent with Google Search grounding.
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${key}`;
+    const r = await fetch(url, {
       method: "POST",
-      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: MODEL,
-        tools: [{ type: "web_search_preview" }],
-        input: [
-          { role: "system", content: SYSTEM },
-          { role: "user", content: userMsg },
-        ],
+        system_instruction: { parts: [{ text: SYSTEM }] },
+        contents: [{ role: "user", parts: [{ text: userMsg }] }],
+        tools: [{ google_search: {} }],
+        generationConfig: { temperature: 0.4 },
       }),
     });
 
     const j = await r.json();
     if (!r.ok) {
-      return json({ error: j?.error?.message ?? `OpenAI error (${r.status}).` }, 200);
+      return json({ error: j?.error?.message ?? `AI error (${r.status}).` }, 200);
     }
 
-    // Extract the assistant's text.
-    let text: string = j.output_text ?? "";
-    if (!text && Array.isArray(j.output)) {
-      text = j.output
-        .flatMap((o: { content?: { type: string; text?: string }[] }) => o.content ?? [])
-        .filter((c: { type: string }) => c.type === "output_text")
-        .map((c: { text?: string }) => c.text ?? "")
-        .join("\n");
+    // Extract the model's text.
+    let text = "";
+    const parts = j?.candidates?.[0]?.content?.parts;
+    if (Array.isArray(parts)) {
+      text = parts.map((p: { text?: string }) => p.text ?? "").join("");
     }
 
     const cleaned = text.trim().replace(/^```(?:json)?/i, "").replace(/```$/i, "").trim();
@@ -78,7 +75,7 @@ Deno.serve(async (req: Request) => {
     try {
       parsed = JSON.parse(cleaned);
     } catch {
-      parsed = { description: cleaned }; // fall back: put raw text in description for the admin to edit
+      parsed = { description: cleaned }; // fall back: raw text into description for the admin to edit
     }
 
     return json({
