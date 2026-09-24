@@ -7,6 +7,7 @@ import { getMyProfile, saveMyProfile } from "../lib/profile";
 import { formatPrice } from "../lib/format";
 import { SectionHead } from "../components/SectionHead";
 import { StoreMap } from "../components/StoreMap";
+import { useT } from "../lib/i18n";
 import { WHATSAPP_NUMBER, DELIVERY_FEE_MILLIMES, FREE_DELIVERY_OVER_MILLIMES, STORE } from "../lib/config";
 import { createOrder, getErrorMessage } from "../lib/orders";
 import type { CustomerDetails, FulfillmentMethod, Order } from "../lib/types";
@@ -29,6 +30,7 @@ function whatsappHref(order: Order): string {
 }
 
 export function CheckoutPage() {
+  const t = useT();
   const navigate = useNavigate();
   const { clearCart } = useStore();
   const { user } = useAuth();
@@ -66,15 +68,15 @@ export function CheckoutPage() {
 
   const validate = (): boolean => {
     if (!form.name.trim() || !form.phone.trim()) {
-      setError("Please fill in your name and phone number.");
+      setError(t("Please fill in your name and phone number."));
       return false;
     }
     if (!isPickup && (!form.address.trim() || !form.city.trim())) {
-      setError("Please fill in your delivery address and city.");
+      setError(t("Please fill in your delivery address and city."));
       return false;
     }
     if (!consent) {
-      setError("Please accept the order terms to continue.");
+      setError(t("Please accept the order terms to continue."));
       return false;
     }
     setError("");
@@ -126,9 +128,9 @@ export function CheckoutPage() {
     return (
       <section className="section">
         <div className="container legal">
-          <SectionHead idx="—" title="Checkout" />
-          <p className="muted">Your cart is empty — nothing to check out.</p>
-          <p><Link className="btn btn-gold" to="/category/all">Browse products</Link></p>
+          <SectionHead idx="—" title={t("Checkout")} />
+          <p className="muted">{t("Your cart is empty — nothing to check out.")}</p>
+          <p><Link className="btn btn-gold" to="/category/all">{t("Browse products")}</Link></p>
         </div>
       </section>
     );
@@ -137,63 +139,63 @@ export function CheckoutPage() {
   return (
     <section className="section">
       <div className="container">
-        <SectionHead idx="—" title="Checkout" meta="Cash on Delivery" />
+        <SectionHead idx="—" title={t("Checkout")} meta={t("Cash on Delivery")} />
         <div className="cart-layout">
           <form className="checkout-form" onSubmit={placeOrder} noValidate>
-            <h3 className="summary-h">How would you like it?</h3>
+            <h3 className="summary-h">{t("How would you like it?")}</h3>
             <div className="fulfil-toggle" role="tablist" aria-label="Delivery method">
               <button type="button" role="tab" aria-selected={!isPickup}
                 className={`fulfil-opt${!isPickup ? " active" : ""}`} onClick={() => setFulfillment("delivery")}>
-                <span className="fulfil-opt-t">Home delivery</span>
-                <span className="fulfil-opt-s">{subtotal >= FREE_DELIVERY_OVER_MILLIMES ? "Free over 100 DT" : `${formatPrice(DELIVERY_FEE_MILLIMES)} · pay on delivery`}</span>
+                <span className="fulfil-opt-t">{t("Home delivery")}</span>
+                <span className="fulfil-opt-s">{subtotal >= FREE_DELIVERY_OVER_MILLIMES ? t("Free over 100 DT") : `${formatPrice(DELIVERY_FEE_MILLIMES)} · ${t("pay on delivery")}`}</span>
               </button>
               <button type="button" role="tab" aria-selected={isPickup}
                 className={`fulfil-opt${isPickup ? " active" : ""}`} onClick={() => setFulfillment("pickup")}>
-                <span className="fulfil-opt-t">Pickup in store</span>
-                <span className="fulfil-opt-s">Free · pay when you collect</span>
+                <span className="fulfil-opt-t">{t("Pickup in store")}</span>
+                <span className="fulfil-opt-s">{t("Free · pay when you collect")}</span>
               </button>
             </div>
 
-            <h3 className="summary-h" style={{ marginTop: 22 }}>{isPickup ? "Your contact details" : "Delivery details"}</h3>
-            <div className="field"><label htmlFor="co-name">Full name <span className="req" aria-hidden="true">*</span></label><input id="co-name" value={form.name} onChange={set("name")} autoComplete="name" required /></div>
-            <div className="field"><label htmlFor="co-phone">Phone <span className="req" aria-hidden="true">*</span></label><input id="co-phone" type="tel" value={form.phone} onChange={set("phone")} autoComplete="tel" required /></div>
+            <h3 className="summary-h" style={{ marginTop: 22 }}>{isPickup ? t("Your contact details") : t("Delivery details")}</h3>
+            <div className="field"><label htmlFor="co-name">{t("Full name")} <span className="req" aria-hidden="true">*</span></label><input id="co-name" value={form.name} onChange={set("name")} autoComplete="name" required /></div>
+            <div className="field"><label htmlFor="co-phone">{t("Phone")} <span className="req" aria-hidden="true">*</span></label><input id="co-phone" type="tel" value={form.phone} onChange={set("phone")} autoComplete="tel" required /></div>
             {isPickup ? (
               <div className="pickup-panel">
-                <p className="pickup-lead">Collect your order at our shop — we'll call <strong>{form.phone || "you"}</strong> when it's ready.</p>
+                <p className="pickup-lead">{t("Collect your order at our shop — we'll call")} <strong>{form.phone || t("you")}</strong> {t("when it's ready.")}</p>
                 <StoreMap height={190} />
               </div>
             ) : (
               <>
-                <div className="field"><label htmlFor="co-address">Address <span className="req" aria-hidden="true">*</span></label><input id="co-address" value={form.address} onChange={set("address")} autoComplete="street-address" required /></div>
-                <div className="field"><label htmlFor="co-city">City <span className="req" aria-hidden="true">*</span></label><input id="co-city" value={form.city} onChange={set("city")} autoComplete="address-level2" required /></div>
+                <div className="field"><label htmlFor="co-address">{t("Address")} <span className="req" aria-hidden="true">*</span></label><input id="co-address" value={form.address} onChange={set("address")} autoComplete="street-address" required /></div>
+                <div className="field"><label htmlFor="co-city">{t("City")} <span className="req" aria-hidden="true">*</span></label><input id="co-city" value={form.city} onChange={set("city")} autoComplete="address-level2" required /></div>
               </>
             )}
-            <div className="field"><label htmlFor="co-notes">Order notes (optional)</label><textarea id="co-notes" rows={3} value={form.notes} onChange={set("notes")} /></div>
+            <div className="field"><label htmlFor="co-notes">{t("Order notes (optional)")}</label><textarea id="co-notes" rows={3} value={form.notes} onChange={set("notes")} /></div>
 
             <div className="consent-line" style={{ marginTop: 4 }}>
               <input id="co-consent" type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
-              <label htmlFor="co-consent">I confirm my details are correct and agree to the <Link to="/terms-and-conditions">order terms</Link> and <Link to="/privacy-policy">Privacy Policy</Link>.</label>
+              <label htmlFor="co-consent">{t("I confirm my details are correct and agree to the")} <Link to="/terms-and-conditions">{t("order terms")}</Link> {t("and")} <Link to="/privacy-policy">{t("Privacy Policy")}</Link>.</label>
             </div>
             {error ? <p className="form-status err" role="alert">{error}</p> : null}
 
-            <button className="btn btn-gold btn-block" type="submit" style={{ marginTop: 18 }} disabled={submitting}>{submitting ? "Placing order…" : "Place order · Cash on Delivery"}</button>
+            <button className="btn btn-gold btn-block" type="submit" style={{ marginTop: 18 }} disabled={submitting}>{submitting ? t("Placing order…") : t("Place order · Cash on Delivery")}</button>
             {WHATSAPP_NUMBER ? (
-              <button className="btn btn-outline btn-block" type="button" onClick={orderOnWhatsapp} style={{ marginTop: 10 }} disabled={submitting}>Order on WhatsApp</button>
+              <button className="btn btn-outline btn-block" type="button" onClick={orderOnWhatsapp} style={{ marginTop: 10 }} disabled={submitting}>{t("Order on WhatsApp")}</button>
             ) : null}
-            <p className="note-sm" style={{ textAlign: "center", marginTop: 12 }}>Secure order · No online payment · Pay in cash when it arrives.</p>
+            <p className="note-sm" style={{ textAlign: "center", marginTop: 12 }}>{t("Secure order · No online payment · Pay in cash when it arrives.")}</p>
           </form>
 
           <aside className="cart-summary">
-            <h3 className="summary-h">Your order</h3>
+            <h3 className="summary-h">{t("Your order")}</h3>
             {lines.map(({ line, product, lineTotal }) => (
               <div className="summary-row" key={lineKey(line.id, line.size)}>
                 <span>{line.qty}× {product.title}{line.size ? ` — ${line.size}` : ""}</span><span>{formatPrice(lineTotal)}</span>
               </div>
             ))}
-            <div className="summary-row"><span>Subtotal</span><span>{formatPrice(subtotal)}</span></div>
-            <div className="summary-row"><span>{isPickup ? "Pickup in store" : "Delivery"}</span><span>{isPickup ? "Free" : delivery === 0 ? "Free" : formatPrice(delivery)}</span></div>
-            <div className="summary-row total"><span>Total</span><span>{formatPrice(total)}</span></div>
-            <p className="note-sm">{isPickup ? "Pay in cash when you collect your order." : "Pay in cash when your order arrives."}</p>
+            <div className="summary-row"><span>{t("Subtotal")}</span><span>{formatPrice(subtotal)}</span></div>
+            <div className="summary-row"><span>{isPickup ? t("Pickup in store") : t("Delivery")}</span><span>{isPickup ? t("Free") : delivery === 0 ? t("Free") : formatPrice(delivery)}</span></div>
+            <div className="summary-row total"><span>{t("Total")}</span><span>{formatPrice(total)}</span></div>
+            <p className="note-sm">{isPickup ? t("Pay in cash when you collect your order.") : t("Pay in cash when your order arrives.")}</p>
           </aside>
         </div>
       </div>

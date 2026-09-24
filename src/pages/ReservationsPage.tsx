@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { SectionHead } from "../components/SectionHead";
 import { StoreMap } from "../components/StoreMap";
 import { useAuth } from "../context/AuthContext";
+import { useT } from "../lib/i18n";
 import { getActiveServices, type Service } from "../lib/services";
 import { createReservation, type ReservationReceipt } from "../lib/reservations";
 import { RESERVATION_SLOTS, RESERVATION_CLOSED_DOW } from "../lib/config";
@@ -22,6 +23,7 @@ function isClosedDay(iso: string): boolean {
 }
 
 export function ReservationsPage() {
+  const t = useT();
   const { user } = useAuth();
   const [services, setServices] = useState<Service[] | null>(null);
   const [form, setForm] = useState<ReservationInput>({
@@ -87,36 +89,36 @@ export function ReservationsPage() {
   return (
     <section className="section">
       <div className="container">
-        <SectionHead idx="—" title="Reservations" meta="By appointment" />
+        <SectionHead idx="—" title={t("Reservations")} meta={t("By appointment")} />
         <div className="cart-layout">
           <form className="checkout-form" onSubmit={submit} noValidate>
-            <h3 className="summary-h">Book a service</h3>
+            <h3 className="summary-h">{t("Book a service")}</h3>
             <p className="note-sm" style={{ marginTop: -6, marginBottom: 12 }}>
-              Appointments run at <strong>10:00 AM</strong> and <strong>3:00 PM</strong>. We're closed on Sundays.
+              {t("Appointments run at 10:00 AM and 3:00 PM. We're closed on Sundays.")}
             </p>
 
             {services === null ? (
-              <p className="muted">Loading services…</p>
+              <p className="muted">{t("Loading services…")}</p>
             ) : services.length === 0 ? (
-              <p className="muted">Reservations aren't available yet — please check back soon.</p>
+              <p className="muted">{t("Reservations aren't available yet — please check back soon.")}</p>
             ) : (
               <>
                 <div className="field">
-                  <label htmlFor="rv-service">Service <span className="req" aria-hidden="true">*</span></label>
+                  <label htmlFor="rv-service">{t("Service")} <span className="req" aria-hidden="true">*</span></label>
                   <select id="rv-service" value={form.service} onChange={set("service")} required>
-                    <option value="" disabled>Choose a service…</option>
+                    <option value="" disabled>{t("Choose a service…")}</option>
                     {services.map((s) => <option key={s.id} value={s.name}>{s.name}</option>)}
                   </select>
                 </div>
 
                 <div className="field">
-                  <label htmlFor="rv-date">Date <span className="req" aria-hidden="true">*</span></label>
+                  <label htmlFor="rv-date">{t("Date")} <span className="req" aria-hidden="true">*</span></label>
                   <input id="rv-date" type="date" min={minDate} value={form.date} onChange={set("date")} required />
-                  {isClosedDay(form.date) ? <span className="field-hint err">We're closed on Sundays.</span> : null}
+                  {isClosedDay(form.date) ? <span className="field-hint err">{t("We're closed on Sundays.")}</span> : null}
                 </div>
 
                 <div className="field">
-                  <label>Time <span className="req" aria-hidden="true">*</span></label>
+                  <label>{t("Time")} <span className="req" aria-hidden="true">*</span></label>
                   <div className="rv-slots" role="radiogroup" aria-label="Time slot">
                     {RESERVATION_SLOTS.map((slot) => (
                       <button
@@ -130,26 +132,26 @@ export function ReservationsPage() {
                   </div>
                 </div>
 
-                <div className="field"><label htmlFor="rv-name">Full name <span className="req" aria-hidden="true">*</span></label>
+                <div className="field"><label htmlFor="rv-name">{t("Full name")} <span className="req" aria-hidden="true">*</span></label>
                   <input id="rv-name" value={form.name} onChange={set("name")} autoComplete="name" required /></div>
-                <div className="field"><label htmlFor="rv-phone">Phone <span className="req" aria-hidden="true">*</span></label>
+                <div className="field"><label htmlFor="rv-phone">{t("Phone")} <span className="req" aria-hidden="true">*</span></label>
                   <input id="rv-phone" type="tel" value={form.phone} onChange={set("phone")} autoComplete="tel" required /></div>
-                <div className="field"><label htmlFor="rv-notes">Notes (optional)</label>
+                <div className="field"><label htmlFor="rv-notes">{t("Notes (optional)")}</label>
                   <textarea id="rv-notes" rows={3} value={form.notes} onChange={set("notes")} /></div>
 
                 {error ? <p className="form-status err" role="alert">{error}</p> : null}
                 <button className="btn btn-gold btn-block" type="submit" style={{ marginTop: 16 }} disabled={submitting}>
-                  {submitting ? "Sending…" : "Request reservation"}
+                  {submitting ? t("Sending…") : t("Request reservation")}
                 </button>
                 <p className="note-sm" style={{ textAlign: "center", marginTop: 12 }}>
-                  We'll call to confirm your appointment. No payment needed to book.
+                  {t("We'll call to confirm your appointment. No payment needed to book.")}
                 </p>
               </>
             )}
           </form>
 
           <aside className="cart-summary">
-            <h3 className="summary-h">Where to find us</h3>
+            <h3 className="summary-h">{t("Where to find us")}</h3>
             <StoreMap height={200} />
           </aside>
         </div>

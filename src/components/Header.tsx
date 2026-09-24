@@ -7,8 +7,11 @@ import { useProducts } from "../lib/useProducts";
 import { searchProducts } from "../lib/search";
 import { formatPrice } from "../lib/format";
 import { IconSearch, IconUser, IconHeart, IconCart, IconMenu } from "./icons";
+import { LanguageSwitcher } from "./LanguageSwitcher";
+import { useT } from "../lib/i18n";
 
 export function Header() {
+  const t = useT();
   const { cartCount, wishlist, openDrawer } = useStore();
   const { user } = useAuth();
   const navCategories = useCategoryNav();
@@ -80,9 +83,9 @@ export function Header() {
                 <IconMenu />
               </button>
               <nav className="nav-links" aria-label="Primary">
-                <Link to="/category/all">Shop</Link>
-                <Link to="/reservations">Reservations</Link>
-                <Link to="/brands">Our Brands</Link>
+                <Link to="/category/all">{t("Shop")}</Link>
+                <Link to="/reservations">{t("Reservations")}</Link>
+                <Link to="/brands">{t("Our Brands")}</Link>
                 <button
                   type="button"
                   className="nav-link-btn"
@@ -90,7 +93,7 @@ export function Header() {
                   aria-controls="catbar"
                   onClick={() => setOpenCats((v) => !v)}
                 >
-                  Categories
+                  {t("Categories")}
                 </button>
               </nav>
             </div>
@@ -101,7 +104,8 @@ export function Header() {
             </Link>
 
             <div className="nav-actions">
-              <button className="icon-btn nav-search" type="button" aria-label="Search" aria-expanded={openSearch} onClick={() => setOpenSearch((v) => !v)}>
+              <LanguageSwitcher />
+              <button className="icon-btn nav-search" type="button" aria-label={t("Search")} aria-expanded={openSearch} onClick={() => setOpenSearch((v) => !v)}>
                 <IconSearch />
               </button>
               <Link className="icon-btn nav-account" to="/account" aria-label={user ? "My account (signed in)" : "Account"} title={user ? user.email : "Sign in"}>

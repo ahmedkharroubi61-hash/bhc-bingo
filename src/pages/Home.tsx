@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { useT } from "../lib/i18n";
 import { useProducts } from "../lib/useProducts";
 import { useInStockCategorySet } from "../lib/useCategoryNav";
 import { formatPrice } from "../lib/format";
@@ -28,12 +29,13 @@ const marqueeItems = [
 ];
 
 function Marquee() {
+  const t = useT();
   const items = [...marqueeItems, ...marqueeItems];
   return (
     <div className="nu-marquee" aria-hidden="true">
       <div className="nu-marquee-track">
-        {items.map((t, i) => (
-          <span className="nu-marquee-item" key={i}>{t}<i className="nu-marquee-star">✦</i></span>
+        {items.map((label, i) => (
+          <span className="nu-marquee-item" key={i}>{t(label)}<i className="nu-marquee-star">✦</i></span>
         ))}
       </div>
     </div>
@@ -117,6 +119,7 @@ function HeroRoller({ items }: { items: Product[] }) {
 }
 
 export function Home() {
+  const t = useT();
   const products = useProducts();
   const inStock = useInStockCategorySet();
   const tiles = needTiles.filter((c) => inStock.has(c.slug));
@@ -143,14 +146,13 @@ export function Home() {
 
           <div className="nu-hero-copy">
             <h1 className="nu-hero-title" id="nu-hero-title">
-              Professionally chosen skincare &amp; wellness, delivered to your door.
+              {t("Professionally chosen skincare & wellness, delivered to your door.")}
             </h1>
             <p className="nu-hero-lead">
-              A considered edit of authentic parapharmacie products — dermatologist-loved,
-              transparently sourced, and paid for only when it arrives.
+              {t("A considered edit of authentic parapharmacie products — dermatologist-loved, transparently sourced, and paid for only when it arrives.")}
             </p>
             <Link className="nu-pill" to="/category/all">
-              Shop by need <IconArrow />
+              {t("Shop by need")} <IconArrow />
             </Link>
           </div>
         </div>
@@ -162,8 +164,8 @@ export function Home() {
       <section className="section nu-needs" aria-labelledby="nu-needs-title">
         <div className="container">
           <div className="nu-head">
-            <h2 className="nu-h2" id="nu-needs-title">Find what works for you</h2>
-            <Link className="nu-link" to="/category/all">All departments <IconArrow /></Link>
+            <h2 className="nu-h2" id="nu-needs-title">{t("Find what works for you")}</h2>
+            <Link className="nu-link" to="/category/all">{t("All departments")} <IconArrow /></Link>
           </div>
           <div className="nu-circles">
             {tiles.map((c, i) => (
@@ -180,13 +182,13 @@ export function Home() {
       <section className="section nu-band" aria-labelledby="nu-stats-title">
         <div className="container nu-band-grid">
           <h2 className="nu-band-h" id="nu-stats-title">
-            Science-backed formulations, transparent sourcing, and the confidence of verified quality.
+            {t("Science-backed formulations, transparent sourcing, and the confidence of verified quality.")}
           </h2>
           <div className="nu-stats">
             {stats.map((s) => (
               <div className="nu-stat" key={s.l}>
                 <span className="nu-stat-n">{s.n}</span>
-                <span className="nu-stat-l">{s.l}</span>
+                <span className="nu-stat-l">{t(s.l)}</span>
               </div>
             ))}
           </div>
@@ -198,12 +200,12 @@ export function Home() {
         <div className="container">
           <div className="nu-head">
             <div>
-              <p className="nu-eyebrow">The edit</p>
-              <h2 className="nu-h2" id="nu-shop-title">Bestsellers</h2>
+              <p className="nu-eyebrow">{t("The edit")}</p>
+              <h2 className="nu-h2" id="nu-shop-title">{t("Bestsellers")}</h2>
             </div>
             <div className="nu-tabs" role="tablist" aria-label="Collections">
               {([["best", "Popular"], ["new", "New"], ["trending", "Trending"]] as [ProductTag, string][]).map(([k, label]) => (
-                <button key={k} role="tab" aria-selected={tab === k} className={`nu-tab${tab === k ? " active" : ""}`} onClick={() => setTab(k)}>{label}</button>
+                <button key={k} role="tab" aria-selected={tab === k} className={`nu-tab${tab === k ? " active" : ""}`} onClick={() => setTab(k)}>{t(label)}</button>
               ))}
             </div>
           </div>
@@ -221,7 +223,7 @@ export function Home() {
             ))}
           </div>
           <div className="nu-shop-foot">
-            <Link className="nu-pill nu-pill-dark" to="/category/all">View all products <IconArrow /></Link>
+            <Link className="nu-pill nu-pill-dark" to="/category/all">{t("View all products")} <IconArrow /></Link>
           </div>
         </div>
       </section>
@@ -246,15 +248,16 @@ export function Home() {
 }
 
 function Newsletter() {
+  const t = useT();
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState<{ msg: string; ok: boolean } | null>(null);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setStatus({ msg: "Please enter a valid email address.", ok: false }); return; }
-    if (!consent) { setStatus({ msg: "Please tick the consent box so we can email you.", ok: false }); return; }
-    setStatus({ msg: "Thank you — you're on the list. (Demo: no data was sent.)", ok: true });
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setStatus({ msg: t("Please enter a valid email address."), ok: false }); return; }
+    if (!consent) { setStatus({ msg: t("Please tick the consent box so we can email you."), ok: false }); return; }
+    setStatus({ msg: t("Thank you — you're on the list. (Demo: no data was sent.)"), ok: true });
     setEmail(""); setConsent(false);
   };
 
@@ -262,13 +265,13 @@ function Newsletter() {
     <section className="section nu-news" aria-labelledby="news-title">
       <div className="container">
         <div className="nu-news-card">
-          <p className="nu-eyebrow">Join the community</p>
-          <h2 className="nu-h2" id="news-title">Beauty updates &amp; exclusive offers</h2>
-          <p className="nu-dim">Occasional emails on new arrivals and offers. Unsubscribe any time.</p>
+          <p className="nu-eyebrow">{t("Join the community")}</p>
+          <h2 className="nu-h2" id="news-title">{t("Beauty updates & exclusive offers")}</h2>
+          <p className="nu-dim">{t("Occasional emails on new arrivals and offers. Unsubscribe any time.")}</p>
           <form onSubmit={submit} noValidate className="nu-news-form">
             <label htmlFor="news-email" className="visually-hidden">Your email address</label>
-            <input id="news-email" type="email" placeholder="you@email.com" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
-            <button className="nu-pill nu-pill-dark" type="submit">Subscribe</button>
+            <input id="news-email" type="email" placeholder={t("you@email.com")} value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
+            <button className="nu-pill nu-pill-dark" type="submit">{t("Subscribe")}</button>
           </form>
           <div className="nu-consent">
             <input id="news-consent" type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} />

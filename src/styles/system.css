@@ -1705,6 +1705,17 @@ body.split-mode { background: #14110f; }
 .svc-name { font-family: var(--sans); font-size: .95rem; font-weight: 500; padding: 8px 10px; border: 1px solid transparent; border-radius: 8px; background: transparent; color: var(--adm-ink); width: 100%; }
 .svc-name:hover { border-color: var(--adm-line-2); }
 .svc-name:focus { outline: none; border-color: var(--adm-accent); background: #fff; box-shadow: 0 0 0 3px rgba(166,72,43,.10); }
+
+/* Language switcher */
+.lang-switch { display: inline-flex; align-items: center; gap: 2px; border: 1px solid var(--line); border-radius: 999px; padding: 2px; background: var(--panel-2); }
+.lang-opt { border: none; background: none; cursor: pointer; font: inherit; font-size: .72rem; font-weight: 700; letter-spacing: .04em; color: var(--muted, #98A2B3); padding: 4px 9px; border-radius: 999px; line-height: 1; transition: background .15s, color .15s; }
+.lang-opt:hover { color: var(--gold); }
+.lang-opt.active { background: var(--gold); color: var(--on-gold); }
+.lang-switch.light { border-color: rgba(255,255,255,.4); background: rgba(0,0,0,.28); backdrop-filter: blur(6px); }
+.lang-switch.light .lang-opt { color: rgba(255,255,255,.8); }
+.lang-switch.light .lang-opt.active { background: #fff; color: #14110f; }
+.split-lang { position: fixed; top: 18px; right: 18px; z-index: 6; }
+@media (max-width: 760px) { .split-lang { top: 12px; right: 12px; } }
 .admin-sold-link { font-weight: 700; color: var(--adm-accent); }
 .admin-status-toggle { font-family: var(--sans); font-size: .74rem; font-weight: 700; padding: 5px 12px; border-radius: 999px; border: 1px solid transparent; cursor: pointer; }
 .admin-status-toggle.on { background: var(--adm-pos-soft); color: var(--adm-pos); }
