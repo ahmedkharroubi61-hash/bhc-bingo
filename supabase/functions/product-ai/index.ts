@@ -1,10 +1,9 @@
 // Supabase Edge Function: product-ai
-// Researches a product on the web via Google Gemini (free tier, with Google
-// Search grounding) and drafts { description, howToUse, ingredients }.
-// Admin-gated; key server-side (GEMINI_API_KEY).
+// Drafts { description, howToUse, ingredients } for a product via Groq
+// (free API, OpenAI-compatible). Admin-gated; key server-side (GROQ_API_KEY).
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const MODEL = "gemini-2.5-flash"; // free tier (no Search grounding — that needs billing)
+const MODEL = "llama-3.3-70b-versatile"; // Groq free tier
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -36,24 +35,27 @@ Deno.serve(async (req: Request) => {
     const { data: isAdmin } = await sb.rpc("is_admin");
     if (isAdmin !== true) return json({ error: "Not authorised." }, 200);
 
-    // 2) Require the Gemini key (set by the store owner).
-    const key = Deno.env.get("GEMINI_API_KEY");
-    if (!key) return json({ error: "The AI key isn't set up yet. Add GEMINI_API_KEY in Supabase → Edge Functions → Secrets." }, 200);
+    // 2) Require the Groq key (set by the store owner).
+    const key = Deno.env.get("GROQ_API_KEY");
+    if (!key) return json({ error: "The AI key isn't set up yet. Add GROQ_API_KEY in Supabase → Edge Functions → Secrets." }, 200);
 
     const { title, brand, category } = await req.json().catch(() => ({}));
     if (!title || !brand) return json({ error: "Missing product title or brand." }, 200);
 
     const userMsg = `Product: ${title}\nBrand: ${brand}\nCategory: ${category ?? ""}`.trim();
 
-    // 3) Gemini generateContent (free tier; no Search grounding).
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${key}`;
-    const r = await fetch(url, {
+    // 3) Groq chat completion (OpenAI-compatible), JSON mode.
+    const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        system_instruction: { parts: [{ text: SYSTEM }] },
-        contents: [{ role: "user", parts: [{ text: userMsg }] }],
-        generationConfig: { temperature: 0.4, responseMimeType: "application/json" },
+        model: MODEL,
+        temperature: 0.4,
+        response_format: { type: "json_object" },
+        messages: [
+          { role: "system", content: SYSTEM },
+          { role: "user", content: userMsg },
+        ],
       }),
     });
 
@@ -62,13 +64,7 @@ Deno.serve(async (req: Request) => {
       return json({ error: j?.error?.message ?? `AI error (${r.status}).` }, 200);
     }
 
-    // Extract the model's text.
-    let text = "";
-    const parts = j?.candidates?.[0]?.content?.parts;
-    if (Array.isArray(parts)) {
-      text = parts.map((p: { text?: string }) => p.text ?? "").join("");
-    }
-
+    const text: string = j?.choices?.[0]?.message?.content ?? "";
     const cleaned = text.trim().replace(/^```(?:json)?/i, "").replace(/```$/i, "").trim();
     let parsed: { description?: string; howToUse?: string; ingredients?: string } = {};
     try {
