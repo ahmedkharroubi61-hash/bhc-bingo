@@ -4,7 +4,7 @@
 // Admin-gated; key server-side (GEMINI_API_KEY).
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const MODEL = "gemini-3.6-flash"; // free tier, supports Google Search grounding
+const MODEL = "gemini-2.5-flash"; // free tier (no Search grounding — that needs billing)
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -14,9 +14,9 @@ const cors = {
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
 
-const SYSTEM = `You research skincare, cosmetic and parapharmacie products for a Tunisian online store.
-Search the web for the SPECIFIC product (by brand + name) and use only what you can verify.
-If you cannot verify a detail, keep it general and do not invent ingredients or medical claims.
+const SYSTEM = `You write product copy for skincare, cosmetic and parapharmacie products for a Tunisian online store.
+Use what you reliably know about the given brand + product.
+If you are unsure of a detail, keep it general and do not invent specific ingredients or medical claims.
 Return ONLY a minified JSON object with exactly these string keys: "description", "howToUse", "ingredients".
 - description: 2-3 plain sentences.
 - howToUse: short step-by-step usage, steps separated by newlines.
@@ -45,7 +45,7 @@ Deno.serve(async (req: Request) => {
 
     const userMsg = `Product: ${title}\nBrand: ${brand}\nCategory: ${category ?? ""}`.trim();
 
-    // 3) Gemini generateContent with Google Search grounding.
+    // 3) Gemini generateContent (free tier; no Search grounding).
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${key}`;
     const r = await fetch(url, {
       method: "POST",
@@ -53,8 +53,7 @@ Deno.serve(async (req: Request) => {
       body: JSON.stringify({
         system_instruction: { parts: [{ text: SYSTEM }] },
         contents: [{ role: "user", parts: [{ text: userMsg }] }],
-        tools: [{ google_search: {} }],
-        generationConfig: { temperature: 0.4 },
+        generationConfig: { temperature: 0.4, responseMimeType: "application/json" },
       }),
     });
 
