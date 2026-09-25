@@ -7,7 +7,8 @@ import { formatPrice } from "../lib/format";
 import { isOutOfStock, OUT_OF_STOCK_LABEL } from "../lib/stock";
 import { ProductGrid } from "../components/ProductGrid";
 import { AddToCartButton } from "../components/AddToCartButton";
-import { IconStar, IconHeart, IconShield, IconTruck, IconLock } from "../components/icons";
+import { ProductRating } from "../components/ProductRating";
+import { IconHeart, IconShield, IconTruck, IconLock } from "../components/icons";
 import { NotFound } from "./NotFound";
 import type { Product } from "../lib/types";
 
@@ -87,9 +88,7 @@ export function ProductPage() {
             <div className="pdp-info">
               <span className="brand-name">{product.brand}</span>
               <h1 className="pdp-title">{product.title}</h1>
-              <span className="rating" aria-label={`Rated ${product.rating} out of 5`}>
-                <IconStar /> {product.rating.toFixed(1)} <span className="count">({product.ratingCount} reviews)</span>
-              </span>
+              <ProductRating productId={product.id} rating={product.rating} ratingCount={product.ratingCount} />
 
               <div className="pdp-price">
                 {hasSizes && !size ? <span className="price-from">from </span> : null}

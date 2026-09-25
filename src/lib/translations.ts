@@ -147,6 +147,12 @@ export const fr: Record<string, string> = {
   "How to use": "Mode d'emploi",
   "Ingredients": "Ingrédients",
   "Choose a size": "Choisissez une taille",
+  "Rate this product": "Notez ce produit",
+  "Your rating": "Votre note",
+  "Thanks for rating!": "Merci pour votre note !",
+  "Rated": "Noté",
+  "star": "étoile",
+  "stars": "étoiles",
 
   // ---- Account / auth ----
   "Sign in": "Se connecter",
