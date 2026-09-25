@@ -48,7 +48,7 @@ export function AdminLogin({ session }: Props) {
     <div className="admin-auth">
       <aside className="admin-auth-brand">
         <div className="admin-auth-brand-top">
-          <span className="admin-brand-mark">BHC BINGO</span>
+          <img className="admin-auth-brand-logo" src="/img/logo-light.png" alt="BHC Bingo" width={52} height={44} />
           <span className="admin-auth-brand-tag">Operations Console</span>
         </div>
         <div className="admin-auth-brand-mid">

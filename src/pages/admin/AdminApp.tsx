@@ -41,7 +41,7 @@ export function AdminApp() {
     <div className="admin-shell">
       <aside className="admin-side">
         <div className="admin-brand">
-          <span className="admin-brand-mark">BHC BINGO</span>
+          <img className="admin-brand-logo" src="/img/logo.png" alt="BHC Bingo" width={44} height={37} />
           <span className="admin-brand-tag">Admin</span>
         </div>
         <nav className="admin-nav" aria-label="Admin sections">
