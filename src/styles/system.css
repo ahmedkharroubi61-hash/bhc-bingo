@@ -1508,7 +1508,8 @@ body.admin-mode { background: var(--adm-bg); }
 .admin-auth { min-height: 100vh; display: grid; grid-template-columns: 1.05fr 1fr; background: var(--adm-bg); }
 .admin-auth-brand { position: relative; overflow: hidden; padding: 46px 46px 40px; display: flex; flex-direction: column; color: #fff; background: radial-gradient(120% 120% at 0% 0%, #B5512F 0%, var(--adm-accent) 42%, var(--adm-accent-deep) 100%); }
 .admin-auth-brand::after { content: ""; position: absolute; right: -80px; bottom: -80px; width: 320px; height: 320px; border-radius: 50%; background: rgba(255,255,255,.07); }
-.admin-auth-brand-top { display: flex; align-items: baseline; gap: 10px; }
+.admin-auth-brand-top { display: flex; align-items: center; gap: 12px; }
+.admin-auth-brand-logo { height: 42px; width: auto; display: block; }
 .admin-auth-brand .admin-brand-mark { font-family: var(--serif); font-size: 1.6rem; letter-spacing: .06em; color: #fff; }
 .admin-auth-brand-tag { font-size: .66rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.72); font-weight: 700; }
 .admin-auth-brand-mid { margin-top: auto; margin-bottom: auto; }
@@ -1529,7 +1530,8 @@ body.admin-mode { background: var(--adm-bg); }
 /* ---- Shell + sidebar (light) ---- */
 .admin-shell { display: grid; grid-template-columns: 250px minmax(0,1fr); min-height: 100vh; }
 .admin-side { background: var(--adm-panel); border-right: 1px solid var(--adm-line); display: flex; flex-direction: column; padding: 20px 14px; position: sticky; top: 0; height: 100vh; }
-.admin-brand { display: flex; align-items: baseline; gap: 8px; padding: 6px 10px 22px; }
+.admin-brand { display: flex; align-items: center; gap: 10px; padding: 6px 10px 22px; }
+.admin-brand-logo { height: 34px; width: auto; display: block; }
 .admin-brand .admin-brand-mark { font-family: var(--serif); font-size: 1.4rem; letter-spacing: .05em; color: var(--adm-ink); font-weight: 600; }
 .admin-brand-tag { font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; color: var(--adm-accent); font-weight: 800; }
 .admin-nav { display: flex; flex-direction: column; gap: 3px; }
