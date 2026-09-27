@@ -203,4 +203,163 @@ export const fr: Record<string, string> = {
   "Privacy": "Confidentialité",
   "Cookies": "Cookies",
   "Terms": "Conditions",
+
+  // ---- Product page ----
+  "Best for": "Idéal pour",
+  "This product is temporarily out of stock. Check back soon.": "Ce produit est temporairement en rupture de stock. Revenez bientôt.",
+  "100% authentic, from authorised suppliers": "100% authentique, de fournisseurs agréés",
+  "Fast delivery · free over 100 DT": "Livraison rapide · gratuite dès 100 DT",
+  "Cash on delivery — pay when it arrives": "Paiement à la livraison — payez à réception",
+  "You may also like": "Vous aimerez aussi",
+  "Size": "Taille",
+  "A considered, dermatologist-loved formula — authentic and chosen for your everyday routine.": "Une formule réfléchie, plébiscitée par les dermatologues — authentique et choisie pour votre routine quotidienne.",
+  "Dry, frizzy or colour-treated hair that needs moisture and manageability.": "Cheveux secs, frisottés ou colorés qui ont besoin d'hydratation et de souplesse.",
+  "Dry, coarse or unruly hair in need of slip and shine.": "Cheveux secs, épais ou indisciplinés en manque de glisse et de brillance.",
+  "Damaged, brittle or chemically-treated hair needing deep repair.": "Cheveux abîmés, cassants ou traités chimiquement nécessitant une réparation profonde.",
+  "Fine to medium hair that wants repair without heaviness.": "Cheveux fins à moyens qui veulent une réparation sans alourdir.",
+  "Rough, cracked heels and dry, thickened skin on the feet.": "Talons rugueux et crevassés et peau sèche et épaissie des pieds.",
+  "Daily facial sun protection with a luminous, dewy finish.": "Protection solaire quotidienne du visage avec un fini lumineux et frais.",
+  "Daily protection against UVA/UVB and light-induced ageing.": "Protection quotidienne contre les UVA/UVB et le vieillissement induit par la lumière.",
+  "Everyday care for softer, healthier-looking hair.": "Soin quotidien pour des cheveux plus doux et plus sains.",
+  "Daily hydration and care for the body.": "Hydratation et soin quotidiens du corps.",
+  "Daily facial care for a healthy, balanced complexion.": "Soin visage quotidien pour un teint sain et équilibré.",
+  "A considered addition to your daily skincare routine.": "Un ajout réfléchi à votre routine de soins quotidienne.",
+  "An easy-to-wear finish for everyday looks.": "Un fini facile à porter pour les looks du quotidien.",
+  "Gentle, everyday care for delicate skin.": "Soin doux et quotidien pour les peaux délicates.",
+  "Everyday wellness and self-care.": "Bien-être et soin de soi au quotidien.",
+
+  // ---- Category labels ----
+  "Body Care": "Soins du corps",
+  "Makeup": "Maquillage",
+  "Baby & Mother": "Bébé & Maman",
+  "Wellness": "Bien-être",
+
+  // ---- Product card ----
+  "Remove from wishlist": "Retirer des favoris",
+  "from": "à partir de",
+  "Choose size": "Choisir la taille",
+  "Add to Cart": "Ajouter au panier",
+
+  // ---- Catalog ----
+  "All": "Tous",
+  "product": "produit",
+  "products": "produits",
+  "Sort": "Trier",
+  "Sort products": "Trier les produits",
+  "Featured": "En vedette",
+  "Price: low to high": "Prix : croissant",
+  "Price: high to low": "Prix : décroissant",
+  "Top rated": "Les mieux notés",
+  "Search results": "Résultats de recherche",
+  "All products": "Tous les produits",
+  "Products": "Produits",
+  "No products match this filter yet.": "Aucun produit ne correspond à ce filtre pour l'instant.",
+  "No products match your search.": "Aucun produit ne correspond à votre recherche.",
+  "Loading…": "Chargement…",
+  "Our full edit of skincare, cosmetics and wellness — authentic products, chosen with care.": "Notre sélection complète de soins, cosmétiques et bien-être — produits authentiques, choisis avec soin.",
+  "A considered selection of the pieces we love right now — thoughtfully priced.": "Une sélection réfléchie de nos coups de cœur du moment — à prix étudiés.",
+  "Cleansers, serums and daily rituals for healthy, radiant skin.": "Nettoyants, sérums et rituels quotidiens pour une peau saine et éclatante.",
+  "Targeted face care — hydration, anti-age and everyday glow.": "Soins ciblés du visage — hydratation, anti-âge et éclat au quotidien.",
+  "Nourishing body and foot care for everyday comfort.": "Soins nourrissants du corps et des pieds pour un confort quotidien.",
+  "Shampoos, masques and serums for softer, stronger hair.": "Shampooings, masques et sérums pour des cheveux plus doux et plus forts.",
+  "High-protection sun care for face and body.": "Soins solaires haute protection pour le visage et le corps.",
+  "Gentle, dermatologist-loved care for babies and mothers.": "Soins doux, approuvés par les dermatologues, pour bébés et mamans.",
+  "Supplements and wellness essentials for daily balance.": "Compléments et essentiels bien-être pour un équilibre au quotidien.",
+
+  // ---- Cart ----
+  "Your cart": "Votre panier",
+  "Your Cart": "Votre panier",
+  "item": "article",
+  "items": "articles",
+  "Your cart is empty.": "Votre panier est vide.",
+  "Order summary": "Récapitulatif",
+  "Calculated at checkout": "Calculé à la commande",
+  "Proceed to checkout": "Passer la commande",
+  "Cash on Delivery available · Secure order": "Paiement à la livraison disponible · Commande sécurisée",
+  "Remove": "Retirer",
+  "Close cart": "Fermer le panier",
+  "Checkout (Cash on Delivery)": "Commander (Paiement à la livraison)",
+  "Shipping calculated at checkout · Pay on delivery": "Livraison calculée à la commande · Paiement à la livraison",
+
+  // ---- Wishlist ----
+  "My wishlist": "Mes favoris",
+  "saved": "enregistré(s)",
+  "Your wishlist is empty. Tap the heart on any product to save it here.": "Votre liste de favoris est vide. Appuyez sur le cœur d'un produit pour l'enregistrer ici.",
+
+  // ---- Order confirmed ----
+  "Thank you": "Merci",
+  "Order": "Commande",
+  "Total (Cash on Delivery)": "Total (Paiement à la livraison)",
+  "Your order has been received. (No order details to display — this page was opened directly.)": "Votre commande a été reçue. (Aucun détail à afficher — cette page a été ouverte directement.)",
+
+  // ---- 404 / Placeholder ----
+  "The page you’re looking for doesn’t exist or has moved.": "La page que vous recherchez n'existe pas ou a été déplacée.",
+  "Coming soon.": "Bientôt disponible.",
+  "This page is being built in the next phase.": "Cette page sera construite lors de la prochaine phase.",
+
+  // ---- Store map ----
+  "Open in Google Maps": "Ouvrir dans Google Maps",
+
+  // ---- Add to cart ----
+  "Added": "Ajouté",
+  "Added to cart": "Ajouté au panier",
+
+  // ---- Brands ----
+  "The dermatologist-loved houses we curate — explore each brand's full range.": "Les marques plébiscitées par les dermatologues que nous sélectionnons — explorez toute la gamme de chaque marque.",
+  "No brands yet.": "Aucune marque pour l'instant.",
+
+  // ---- Account ----
+  "Loading your details…": "Chargement de vos informations…",
+  "Saved. We'll prefill these at checkout.": "Enregistré. Nous les préremplirons à la commande.",
+  "Could not save.": "Impossible d'enregistrer.",
+  "Saved delivery details": "Coordonnées de livraison enregistrées",
+  "These prefill your next Cash-on-Delivery checkout.": "Elles préremplissent votre prochaine commande en paiement à la livraison.",
+  "Saving…": "Enregistrement…",
+  "Save details": "Enregistrer",
+  "Loading your orders…": "Chargement de vos commandes…",
+  "Your orders": "Vos commandes",
+  "No orders yet.": "Aucune commande pour l'instant.",
+  "Start shopping": "Commencer les achats",
+  "Accounts need the store backend, which isn't connected in this preview.": "Les comptes nécessitent le backend de la boutique, non connecté dans cet aperçu.",
+  "Sign in or create an account": "Connectez-vous ou créez un compte",
+  "Welcome": "Bienvenue",
+
+  // ---- Auth form ----
+  "Please enter your first and last name.": "Veuillez saisir votre prénom et votre nom.",
+  "Please choose a stronger password — see the checklist below.": "Veuillez choisir un mot de passe plus robuste — voir la liste ci-dessous.",
+  "Account created. Check your inbox to confirm your email, then sign in.": "Compte créé. Vérifiez votre boîte mail pour confirmer votre adresse, puis connectez-vous.",
+  "Account created — you can sign in now.": "Compte créé — vous pouvez vous connecter.",
+  "Too many attempts. Try again in": "Trop de tentatives. Réessayez dans",
+  "attempt left before a temporary lock.": "tentative restante avant un blocage temporaire.",
+  "attempts left before a temporary lock.": "tentatives restantes avant un blocage temporaire.",
+  "The next failed attempt will temporarily lock this form.": "La prochaine tentative échouée bloquera temporairement ce formulaire.",
+  "Locked": "Bloqué",
+  "Signing in…": "Connexion…",
+  "Creating account…": "Création du compte…",
+  "At least 8 characters": "Au moins 8 caractères",
+  "A lowercase letter": "Une lettre minuscule",
+  "An uppercase letter": "Une lettre majuscule",
+  "A number": "Un chiffre",
+  "A symbol (!?@#…)": "Un symbole (!?@#…)",
+
+  // ---- Cookie banner ----
+  "We use cookies that are strictly necessary to run this site. With your consent, we may also use analytics cookies. No analytics or marketing cookies are set unless you allow them.": "Nous utilisons des cookies strictement nécessaires au fonctionnement du site. Avec votre consentement, nous pouvons aussi utiliser des cookies analytiques. Aucun cookie analytique ou marketing n'est déposé sans votre autorisation.",
+  "Strictly necessary": "Strictement nécessaires",
+  "Required for the site to work. Always on.": "Nécessaires au fonctionnement du site. Toujours actifs.",
+  "Analytics": "Analytique",
+  "Loaded only if you allow it.": "Chargé uniquement si vous l'autorisez.",
+  "Marketing": "Marketing",
+  "Currently none are used — reserved for future use.": "Aucun n'est utilisé actuellement — réservé à un usage futur.",
+  "Save my choices": "Enregistrer mes choix",
+
+  // ---- Header topbar ----
+  "Authentic products only · Professional advice in-store & online": "Produits authentiques uniquement · Conseils professionnels en magasin & en ligne",
+  "Authentic products · Cash on delivery": "Produits authentiques · Paiement à la livraison",
+
+  // ---- Header category drawer & search ----
+  "Shop by category": "Acheter par catégorie",
+  "Close menu": "Fermer le menu",
+  "See all results for": "Voir tous les résultats pour",
+  "No matches for": "Aucun résultat pour",
+  "Press Enter to search everything.": "Appuyez sur Entrée pour tout rechercher.",
 };

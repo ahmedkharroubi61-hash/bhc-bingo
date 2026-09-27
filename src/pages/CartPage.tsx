@@ -3,20 +3,22 @@ import { useStore, lineKey } from "../context/StoreContext";
 import { useCartLines } from "../lib/useCartLines";
 import { formatPrice } from "../lib/format";
 import { SectionHead } from "../components/SectionHead";
+import { useT } from "../lib/i18n";
 
 export function CartPage() {
   const { setQty, removeFromCart } = useStore();
   const { lines, subtotal } = useCartLines();
+  const t = useT();
 
   return (
     <section className="section">
       <div className="container">
-        <SectionHead idx="—" title="Your cart" meta={`${lines.length} item${lines.length === 1 ? "" : "s"}`} />
+        <SectionHead idx="—" title={t("Your cart")} meta={`${lines.length} ${lines.length === 1 ? t("item") : t("items")}`} />
 
         {lines.length === 0 ? (
           <div className="legal">
-            <p className="muted">Your cart is empty.</p>
-            <p><Link className="btn btn-gold" to="/category/all">Browse products</Link></p>
+            <p className="muted">{t("Your cart is empty.")}</p>
+            <p><Link className="btn btn-gold" to="/category/all">{t("Browse products")}</Link></p>
           </div>
         ) : (
           <div className="cart-layout">
@@ -27,7 +29,7 @@ export function CartPage() {
                   <div className="cart-info">
                     <span className="brand-name">{product.brand}</span>
                     <h3 className="cart-title">{product.title}</h3>
-                    {line.size ? <span className="l-size">Size: {line.size}</span> : null}
+                    {line.size ? <span className="l-size">{t("Size")}: {line.size}</span> : null}
                     <span className="l-price">{formatPrice(unitPrice)}</span>
                     <div className="qty">
                       <button type="button" aria-label={`Decrease quantity of ${product.title}`} onClick={() => setQty(line.id, line.qty - 1, line.size)}>&minus;</button>
@@ -37,20 +39,20 @@ export function CartPage() {
                   </div>
                   <div className="cart-line-end">
                     <span className="price">{formatPrice(lineTotal)}</span>
-                    <button className="l-remove" type="button" onClick={() => removeFromCart(line.id, line.size)}>Remove</button>
+                    <button className="l-remove" type="button" onClick={() => removeFromCart(line.id, line.size)}>{t("Remove")}</button>
                   </div>
                 </div>
               ))}
             </div>
 
             <aside className="cart-summary">
-              <h3 className="summary-h">Order summary</h3>
-              <div className="summary-row"><span>Subtotal</span><span>{formatPrice(subtotal)}</span></div>
-              <div className="summary-row muted"><span>Delivery</span><span>Calculated at checkout</span></div>
-              <div className="summary-row total"><span>Total</span><span>{formatPrice(subtotal)}</span></div>
-              <Link className="btn btn-gold btn-block" to="/checkout">Proceed to checkout</Link>
-              <Link className="link-arrow" to="/category/all" style={{ marginTop: 16 }}>Continue shopping</Link>
-              <p className="note-sm">Cash on Delivery available · Secure order</p>
+              <h3 className="summary-h">{t("Order summary")}</h3>
+              <div className="summary-row"><span>{t("Subtotal")}</span><span>{formatPrice(subtotal)}</span></div>
+              <div className="summary-row muted"><span>{t("Delivery")}</span><span>{t("Calculated at checkout")}</span></div>
+              <div className="summary-row total"><span>{t("Total")}</span><span>{formatPrice(subtotal)}</span></div>
+              <Link className="btn btn-gold btn-block" to="/checkout">{t("Proceed to checkout")}</Link>
+              <Link className="link-arrow" to="/category/all" style={{ marginTop: 16 }}>{t("Continue shopping")}</Link>
+              <p className="note-sm">{t("Cash on Delivery available · Secure order")}</p>
             </aside>
           </div>
         )}

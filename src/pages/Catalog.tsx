@@ -4,6 +4,7 @@ import { useProducts } from "../lib/useProducts";
 import { ProductGrid } from "../components/ProductGrid";
 import { categories } from "../data/categories";
 import { productMatches } from "../lib/search";
+import { useT } from "../lib/i18n";
 import type { Product } from "../lib/types";
 
 type SortKey = "featured" | "price-asc" | "price-desc" | "rating";
@@ -60,6 +61,7 @@ export function Catalog() {
   const routeKey = searchMode ? `q:${query.toLowerCase()}` : brandMode ? `brand:${brandParam}` : slug;
 
   const products = useProducts();
+  const t = useT();
   const [facet, setFacet] = useState("all");
   const [sort, setSort] = useState<SortKey>("featured");
 
@@ -119,9 +121,9 @@ export function Catalog() {
         <img className="cat-hero-bg" src={meta.banner} alt="" aria-hidden="true" loading="eager" />
         <div className="cat-hero-scrim" aria-hidden="true" />
         <div className="container cat-hero-inner">
-          <p className="cat-hero-kicker">{searchMode ? "Search" : brandMode ? "Our Brands" : "BHC Bingo · Parapharmacie"}</p>
-          <h1 className="cat-hero-title" id="cat-hero-title">{title}</h1>
-          <p className="cat-hero-sub">{meta.sub}</p>
+          <p className="cat-hero-kicker">{searchMode ? t("Search") : brandMode ? t("Our Brands") : "BHC Bingo · Parapharmacie"}</p>
+          <h1 className="cat-hero-title" id="cat-hero-title">{t(title)}</h1>
+          <p className="cat-hero-sub">{t(meta.sub)}</p>
         </div>
       </section>
 
@@ -134,7 +136,7 @@ export function Catalog() {
             aria-pressed={facet === "all"}
             onClick={() => setFacet("all")}
           >
-            All
+            {t("All")}
           </button>
           {facets.map((f) => (
             <button
@@ -155,18 +157,18 @@ export function Catalog() {
         <div className="container">
           <div className="catalog-toolbar">
             <span className="catalog-count">
-              {products == null ? "Loading…" : `${list.length} ${list.length === 1 ? "product" : "products"}`}
+              {products == null ? t("Loading…") : `${list.length} ${list.length === 1 ? t("product") : t("products")}`}
             </span>
             <label className="sort-control">
-              <span className="sort-label">Sort</span>
-              <select className="sort-select" value={sort} onChange={(e) => setSort(e.target.value as SortKey)} aria-label="Sort products">
-                {SORTS.map(([key, label]) => (<option key={key} value={key}>{label}</option>))}
+              <span className="sort-label">{t("Sort")}</span>
+              <select className="sort-select" value={sort} onChange={(e) => setSort(e.target.value as SortKey)} aria-label={t("Sort products")}>
+                {SORTS.map(([key, label]) => (<option key={key} value={key}>{t(label)}</option>))}
               </select>
             </label>
           </div>
 
-          {products == null ? <p className="muted">Loading…</p>
-            : list.length === 0 ? <p className="muted">{searchMode ? `No products match “${query}”. Try a brand or product name.` : "No products match this filter yet."}</p>
+          {products == null ? <p className="muted">{t("Loading…")}</p>
+            : list.length === 0 ? <p className="muted">{searchMode ? `${t("No products match your search.")} “${query}”` : t("No products match this filter yet.")}</p>
             : <ProductGrid products={list} />}
         </div>
       </section>

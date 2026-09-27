@@ -1,4 +1,5 @@
 import { STORE } from "../lib/config";
+import { useT } from "../lib/i18n";
 
 interface StoreMapProps {
   /** Compact height (checkout side panel) vs full (Visit-us section). */
@@ -10,6 +11,7 @@ interface StoreMapProps {
  * link that opens directions in Google Maps. Keyless embed — no API key needed.
  */
 export function StoreMap({ height = 200 }: StoreMapProps) {
+  const t = useT();
   return (
     <div className="store-map">
       <div className="store-map-frame" style={{ height }}>
@@ -27,7 +29,7 @@ export function StoreMap({ height = 200 }: StoreMapProps) {
           <span className="store-map-area">{STORE.area}</span>
         </div>
         <a className="store-map-link" href={STORE.mapsUrl} target="_blank" rel="noreferrer">
-          Open in Google Maps
+          {t("Open in Google Maps")}
         </a>
       </div>
     </div>

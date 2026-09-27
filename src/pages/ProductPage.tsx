@@ -10,6 +10,7 @@ import { AddToCartButton } from "../components/AddToCartButton";
 import { ProductRating } from "../components/ProductRating";
 import { IconHeart, IconShield, IconTruck, IconLock } from "../components/icons";
 import { NotFound } from "./NotFound";
+import { useT, useI18n, type Lang } from "../lib/i18n";
 import type { Product } from "../lib/types";
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -25,13 +26,19 @@ interface Tab {
   body: string;
 }
 
-function buildTabs(product: Product): Tab[] {
+/** Pick the French value when the language is French and it exists, else the base. */
+function pick(base: string | undefined, fr: string | undefined, lang: Lang): string | undefined {
+  return lang === "fr" ? (fr ?? base) : base;
+}
+
+function buildTabs(product: Product, lang: Lang, fallback: string): Tab[] {
   const tabs: Tab[] = [];
-  const description = product.description
-    ?? "A considered, dermatologist-loved formula — authentic and chosen for your everyday routine.";
+  const description = pick(product.description, product.descriptionFr, lang) ?? fallback;
   tabs.push({ key: "description", label: "Description", body: description });
-  if (product.howToUse) tabs.push({ key: "how", label: "How to use", body: product.howToUse });
-  if (product.ingredients) tabs.push({ key: "ingredients", label: "Ingredients", body: product.ingredients });
+  const howToUse = pick(product.howToUse, product.howToUseFr, lang);
+  if (howToUse) tabs.push({ key: "how", label: "How to use", body: howToUse });
+  const ingredients = pick(product.ingredients, product.ingredientsFr, lang);
+  if (ingredients) tabs.push({ key: "ingredients", label: "Ingredients", body: ingredients });
   return tabs;
 }
 
@@ -42,6 +49,8 @@ export function ProductPage() {
   const [size, setSize] = useState<string | undefined>(undefined);
   const [qty, setQty] = useState(1);
   const [tab, setTab] = useState("description");
+  const t = useT();
+  const { lang } = useI18n();
 
   const product = (products ?? []).find((p) => p.id === id);
 
@@ -70,16 +79,16 @@ export function ProductPage() {
   const pressed = inWishlist(product.id);
   const soldOut = isOutOfStock(product);
   const hasSizes = !!product.sizes && product.sizes.length > 0;
-  const tabs = buildTabs(product);
-  const activeTab = tabs.find((t) => t.key === tab) ?? tabs[0];
+  const tabs = buildTabs(product, lang, t("A considered, dermatologist-loved formula — authentic and chosen for your everyday routine."));
+  const activeTab = tabs.find((tb) => tb.key === tab) ?? tabs[0];
 
   return (
     <>
       <section className="section pdp">
         <div className="container">
           <nav className="breadcrumb" aria-label="Breadcrumb">
-            <Link to="/shop">Home</Link> <span aria-hidden="true">/</span>{" "}
-            <Link to={`/category/${product.category}`}>{CATEGORY_LABELS[product.category] ?? "Shop"}</Link>{" "}
+            <Link to="/shop">{t("Home")}</Link> <span aria-hidden="true">/</span>{" "}
+            <Link to={`/category/${product.category}`}>{t(CATEGORY_LABELS[product.category] ?? "Shop")}</Link>{" "}
             <span aria-hidden="true">/</span> <span className="crumb-current">{product.brand}</span>
           </nav>
 
@@ -100,29 +109,29 @@ export function ProductPage() {
 
               {/* Tabs */}
               <div className="pdp-tabs" role="tablist" aria-label="Product information">
-                {tabs.map((t) => (
+                {tabs.map((tb) => (
                   <button
-                    key={t.key}
-                    className={`pdp-tab${activeTab.key === t.key ? " active" : ""}`}
+                    key={tb.key}
+                    className={`pdp-tab${activeTab.key === tb.key ? " active" : ""}`}
                     role="tab"
                     type="button"
-                    aria-selected={activeTab.key === t.key}
-                    onClick={() => setTab(t.key)}
+                    aria-selected={activeTab.key === tb.key}
+                    onClick={() => setTab(tb.key)}
                   >
-                    {t.label}
+                    {t(tb.label)}
                   </button>
                 ))}
               </div>
               <div className="pdp-tabpanel" role="tabpanel">
                 {product.bestFor && activeTab.key === "description" ? (
-                  <p className="pdp-bestfor"><span className="pm-label" style={{ marginBottom: 4 }}>Best for</span>{product.bestFor}</p>
+                  <p className="pdp-bestfor"><span className="pm-label" style={{ marginBottom: 4 }}>{t("Best for")}</span>{t(product.bestFor)}</p>
                 ) : null}
                 <p className="pdp-desc">{activeTab.body}</p>
               </div>
 
               {hasSizes ? (
                 <div className="pm-field">
-                  <span className="pm-label">Size</span>
+                  <span className="pm-label">{t("Size")}</span>
                   <div className="pm-sizes" role="radiogroup" aria-label="Choose a size">
                     {product.sizes!.map((s) => (
                       <button
@@ -144,7 +153,7 @@ export function ProductPage() {
               {soldOut ? (
                 <div className="pdp-buy pdp-soldout">
                   <span className="pdp-soldout-badge">{OUT_OF_STOCK_LABEL}</span>
-                  <p className="pdp-soldout-note">This product is temporarily out of stock. Check back soon.</p>
+                  <p className="pdp-soldout-note">{t("This product is temporarily out of stock. Check back soon.")}</p>
                   <button className={`icon-btn pdp-save${pressed ? " is-saved" : ""}`} type="button" aria-pressed={pressed} aria-label={pressed ? "Saved to wishlist" : "Save to wishlist"} onClick={() => toggleWishlist(product.id)}>
                     <IconHeart />
                   </button>
@@ -158,7 +167,7 @@ export function ProductPage() {
                   </div>
                   <AddToCartButton
                     className="btn btn-accent pdp-add"
-                    label={`Add to cart — ${formatPrice(unit * qty)}`}
+                    label={`${t("Add to cart")} — ${formatPrice(unit * qty)}`}
                     onAdd={() => addToCart(product.id, { qty, size })}
                   />
                   <button className={`icon-btn pdp-save${pressed ? " is-saved" : ""}`} type="button" aria-pressed={pressed} aria-label={pressed ? "Saved to wishlist" : "Save to wishlist"} onClick={() => toggleWishlist(product.id)}>
@@ -168,9 +177,9 @@ export function ProductPage() {
               )}
 
               <ul className="pdp-trust">
-                <li><IconShield /> 100% authentic, from authorised suppliers</li>
-                <li><IconTruck /> Fast delivery · free over 100 DT</li>
-                <li><IconLock /> Cash on delivery — pay when it arrives</li>
+                <li><IconShield /> {t("100% authentic, from authorised suppliers")}</li>
+                <li><IconTruck /> {t("Fast delivery · free over 100 DT")}</li>
+                <li><IconLock /> {t("Cash on delivery — pay when it arrives")}</li>
               </ul>
             </div>
 
@@ -184,7 +193,7 @@ export function ProductPage() {
       {related.length > 0 ? (
         <section className="section alt pdp-related" aria-labelledby="related-title">
           <div className="container">
-            <h2 className="pdp-related-title" id="related-title">You may also like</h2>
+            <h2 className="pdp-related-title" id="related-title">{t("You may also like")}</h2>
             <ProductGrid products={related} />
           </div>
         </section>

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { useT } from "../lib/i18n";
 
 const KEY = "bingo_cookie_consent_v1";
 type Consent = { necessary: true; analytics: boolean; marketing: boolean; ts?: string };
 
 export function CookieBanner() {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [showPrefs, setShowPrefs] = useState(false);
   const [analytics, setAnalytics] = useState(false);
@@ -26,28 +28,28 @@ export function CookieBanner() {
   if (!open) return null;
   return (
     <section className="cookie-banner" role="dialog" aria-modal="false" aria-labelledby="cookie-title">
-      <h3 id="cookie-title">We value your privacy</h3>
-      <p>We use cookies that are strictly necessary to run this site. With your consent, we may also use analytics cookies. No analytics or marketing cookies are set unless you allow them. Read our <a href="/cookie-policy">Cookie Policy</a>.</p>
+      <h3 id="cookie-title">{t("We value your privacy")}</h3>
+      <p>{t("We use cookies that are strictly necessary to run this site. With your consent, we may also use analytics cookies. No analytics or marketing cookies are set unless you allow them.")} <a href="/cookie-policy">{t("Cookie Policy")}</a>.</p>
       <div className="cookie-actions">
-        <button className="btn btn-gold" type="button" onClick={() => save({ necessary: true, analytics: true, marketing: true })}>Accept all</button>
-        <button className="btn btn-outline" type="button" onClick={() => save({ necessary: true, analytics: false, marketing: false })}>Reject non-essential</button>
-        <button className="btn btn-ghost" type="button" aria-expanded={showPrefs} onClick={() => setShowPrefs((v) => !v)}>Customise</button>
+        <button className="btn btn-gold" type="button" onClick={() => save({ necessary: true, analytics: true, marketing: true })}>{t("Accept all")}</button>
+        <button className="btn btn-outline" type="button" onClick={() => save({ necessary: true, analytics: false, marketing: false })}>{t("Reject non-essential")}</button>
+        <button className="btn btn-ghost" type="button" aria-expanded={showPrefs} onClick={() => setShowPrefs((v) => !v)}>{t("Customise")}</button>
       </div>
       {showPrefs ? (
         <div className="cookie-prefs">
           <div className="cookie-opt">
             <input type="checkbox" id="opt-necessary" checked disabled />
-            <label htmlFor="opt-necessary"><strong>Strictly necessary</strong><span>Required for the site to work. Always on.</span></label>
+            <label htmlFor="opt-necessary"><strong>{t("Strictly necessary")}</strong><span>{t("Required for the site to work. Always on.")}</span></label>
           </div>
           <div className="cookie-opt">
             <input type="checkbox" id="opt-analytics" checked={analytics} onChange={(e) => setAnalytics(e.target.checked)} />
-            <label htmlFor="opt-analytics"><strong>Analytics</strong><span>Loaded only if you allow it.</span></label>
+            <label htmlFor="opt-analytics"><strong>{t("Analytics")}</strong><span>{t("Loaded only if you allow it.")}</span></label>
           </div>
           <div className="cookie-opt">
             <input type="checkbox" id="opt-marketing" checked={marketing} onChange={(e) => setMarketing(e.target.checked)} />
-            <label htmlFor="opt-marketing"><strong>Marketing</strong><span>Currently none are used — reserved for future use.</span></label>
+            <label htmlFor="opt-marketing"><strong>{t("Marketing")}</strong><span>{t("Currently none are used — reserved for future use.")}</span></label>
           </div>
-          <button className="btn btn-gold btn-block" type="button" onClick={() => save({ necessary: true, analytics, marketing })}>Save my choices</button>
+          <button className="btn btn-gold btn-block" type="button" onClick={() => save({ necessary: true, analytics, marketing })}>{t("Save my choices")}</button>
         </div>
       ) : null}
     </section>

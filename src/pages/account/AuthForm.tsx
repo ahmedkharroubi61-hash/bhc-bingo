@@ -2,11 +2,13 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { makeLoginGuard, formatCountdown, type LockStatus } from "../../lib/loginGuard";
 import { checkPassword, isStrongPassword } from "../../lib/password";
+import { useT } from "../../lib/i18n";
 
 type Mode = "signin" | "signup";
 
 export function AuthForm() {
   const { signIn, signUp } = useAuth();
+  const t = useT();
   const guard = useMemo(() => makeLoginGuard("client"), []);
 
   const [mode, setMode] = useState<Mode>("signin");
@@ -43,11 +45,11 @@ export function AuthForm() {
 
     if (mode === "signup") {
       if (!firstName.trim() || !lastName.trim()) {
-        setError("Please enter your first and last name.");
+        setError(t("Please enter your first and last name."));
         return;
       }
       if (!isStrongPassword(password)) {
-        setError("Please choose a stronger password — see the checklist below.");
+        setError(t("Please choose a stronger password — see the checklist below."));
         return;
       }
     }
@@ -78,8 +80,8 @@ export function AuthForm() {
     setLock(guard.recordFailure());
     setNotice(
       result.needsConfirmation
-        ? "Account created. Check your inbox to confirm your email, then sign in."
-        : "Account created — you can sign in now."
+        ? t("Account created. Check your inbox to confirm your email, then sign in.")
+        : t("Account created — you can sign in now.")
     );
     setMode("signin");
     setPassword("");
@@ -90,29 +92,29 @@ export function AuthForm() {
       <div className="acct-tabs" role="tablist" aria-label="Account access">
         <button type="button" role="tab" aria-selected={mode === "signin"}
           className={`acct-tab${mode === "signin" ? " active" : ""}`} onClick={() => switchMode("signin")}>
-          Sign in
+          {t("Sign in")}
         </button>
         <button type="button" role="tab" aria-selected={mode === "signup"}
           className={`acct-tab${mode === "signup" ? " active" : ""}`} onClick={() => switchMode("signup")}>
-          Create account
+          {t("Create account")}
         </button>
       </div>
 
       <p className="acct-auth-lead">
         {mode === "signin"
-          ? "Sign in to see your orders and check out faster."
-          : "Create an account to track your orders and save your delivery details."}
+          ? t("Sign in to see your orders and check out faster.")
+          : t("Create an account to track your orders and save your delivery details.")}
       </p>
 
       {mode === "signup" ? (
         <div className="acct-name-row">
           <div className="field">
-            <label htmlFor="acct-first">First name</label>
+            <label htmlFor="acct-first">{t("First name")}</label>
             <input id="acct-first" autoComplete="given-name" placeholder="Amira"
               value={firstName} onChange={(e) => setFirstName(e.target.value)} disabled={lock.locked} required />
           </div>
           <div className="field">
-            <label htmlFor="acct-last">Last name</label>
+            <label htmlFor="acct-last">{t("Last name")}</label>
             <input id="acct-last" autoComplete="family-name" placeholder="Ben Salah"
               value={lastName} onChange={(e) => setLastName(e.target.value)} disabled={lock.locked} required />
           </div>
@@ -120,15 +122,15 @@ export function AuthForm() {
       ) : null}
 
       <div className="field">
-        <label htmlFor="acct-email">Email</label>
-        <input id="acct-email" type="email" autoComplete="email" placeholder="you@email.com"
+        <label htmlFor="acct-email">{t("Email")}</label>
+        <input id="acct-email" type="email" autoComplete="email" placeholder={t("you@email.com")}
           value={email} onChange={(e) => setEmail(e.target.value)} disabled={lock.locked} required />
       </div>
       <div className="field">
-        <label htmlFor="acct-password">Password</label>
+        <label htmlFor="acct-password">{t("Password")}</label>
         <input id="acct-password" type="password"
           autoComplete={mode === "signin" ? "current-password" : "new-password"}
-          placeholder={mode === "signup" ? "Create a strong password" : "••••••••"}
+          placeholder={mode === "signup" ? t("Create a strong password") : "••••••••"}
           value={password} onChange={(e) => setPassword(e.target.value)} disabled={lock.locked} required />
       </div>
 
@@ -136,7 +138,7 @@ export function AuthForm() {
         <ul className="acct-pw-rules" aria-label="Password requirements">
           {pwRules.map((r) => (
             <li key={r.key} className={r.met ? "met" : ""}>
-              <span aria-hidden="true">{r.met ? "✓" : "○"}</span> {r.label}
+              <span aria-hidden="true">{r.met ? "✓" : "○"}</span> {t(r.label)}
             </li>
           ))}
         </ul>
@@ -144,7 +146,7 @@ export function AuthForm() {
 
       {lock.locked ? (
         <p className="form-status err" role="alert">
-          Too many attempts. Try again in <strong>{formatCountdown(lock.remainingMs)}</strong>.
+          {t("Too many attempts. Try again in")} <strong>{formatCountdown(lock.remainingMs)}</strong>.
         </p>
       ) : error ? (
         <>
@@ -152,8 +154,8 @@ export function AuthForm() {
           {lock.attempts > 0 && lock.attemptsLeft <= 2 ? (
             <p className="note-sm">
               {lock.attemptsLeft > 0
-                ? `${lock.attemptsLeft} attempt${lock.attemptsLeft === 1 ? "" : "s"} left before a temporary lock.`
-                : "The next failed attempt will temporarily lock this form."}
+                ? `${lock.attemptsLeft} ${lock.attemptsLeft === 1 ? t("attempt left before a temporary lock.") : t("attempts left before a temporary lock.")}`
+                : t("The next failed attempt will temporarily lock this form.")}
             </p>
           ) : null}
         </>
@@ -162,13 +164,13 @@ export function AuthForm() {
       ) : null}
 
       <button className="btn btn-gold btn-block" type="submit" disabled={busy || lock.locked} style={{ marginTop: 16 }}>
-        {lock.locked ? `Locked · ${formatCountdown(lock.remainingMs)}`
-          : busy ? (mode === "signin" ? "Signing in…" : "Creating account…")
-          : mode === "signin" ? "Sign in" : "Create account"}
+        {lock.locked ? `${t("Locked")} · ${formatCountdown(lock.remainingMs)}`
+          : busy ? (mode === "signin" ? t("Signing in…") : t("Creating account…"))
+          : mode === "signin" ? t("Sign in") : t("Create account")}
       </button>
 
       <p className="note-sm" style={{ textAlign: "center", marginTop: 12 }}>
-        You can still order as a guest — an account just makes it faster next time.
+        {t("You can still order as a guest — an account just makes it faster next time.")}
       </p>
     </form>
   );

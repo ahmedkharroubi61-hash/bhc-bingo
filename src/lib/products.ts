@@ -29,6 +29,7 @@ type Row = {
   rating: number; rating_count: number; image: string; alt: string; tags: ProductTag[];
   stock?: number | null; active?: boolean | null; hero_rank?: number | null;
   description?: string | null; how_to_use?: string | null; ingredients?: string | null;
+  description_fr?: string | null; how_to_use_fr?: string | null; ingredients_fr?: string | null;
   sizes?: SizeRow[] | null;
 };
 
@@ -46,6 +47,9 @@ function mapRow(r: Row): Product {
     description: r.description ?? undefined,
     howToUse: r.how_to_use ?? undefined,
     ingredients: r.ingredients ?? undefined,
+    descriptionFr: r.description_fr ?? undefined,
+    howToUseFr: r.how_to_use_fr ?? undefined,
+    ingredientsFr: r.ingredients_fr ?? undefined,
     sizes: sizes.length > 0 ? sizes : undefined,
   };
 }

@@ -2,18 +2,20 @@ import { Link, useLocation } from "react-router-dom";
 import { formatPrice } from "../lib/format";
 import { hasSupabase } from "../lib/supabase";
 import { StoreMap } from "../components/StoreMap";
+import { useT } from "../lib/i18n";
 import type { Order } from "../lib/types";
 
 export function OrderConfirmed() {
   const location = useLocation();
+  const t = useT();
   const order = (location.state as { order?: Order } | null)?.order;
   const isPickup = order?.fulfillment === "pickup";
 
   return (
     <section className="section">
       <div className="container legal" style={{ maxWidth: 680 }}>
-        <p className="kicker">Order received</p>
-        <h1>Thank you{order ? `, ${order.customer.name.split(" ")[0]}` : ""}.</h1>
+        <p className="kicker">{t("Order received")}</p>
+        <h1>{t("Thank you")}{order ? `, ${order.customer.name.split(" ")[0]}` : ""}.</h1>
         {order ? (
           <>
             <p className="muted">
@@ -26,17 +28,17 @@ export function OrderConfirmed() {
               )}
             </p>
             <div className="cart-summary" style={{ marginTop: 24 }}>
-              <h3 className="summary-h">Order {order.id}</h3>
+              <h3 className="summary-h">{t("Order")} {order.id}</h3>
               {order.items.map((i, n) => (
                 <div className="summary-row" key={n}><span>{i.qty}× {i.title}</span><span>{formatPrice(i.lineTotal)}</span></div>
               ))}
-              <div className="summary-row"><span>Subtotal</span><span>{formatPrice(order.subtotal)}</span></div>
-              <div className="summary-row"><span>{isPickup ? "Pickup in store" : "Delivery"}</span><span>{order.delivery === 0 ? "Free" : formatPrice(order.delivery)}</span></div>
-              <div className="summary-row total"><span>Total (Cash on Delivery)</span><span>{formatPrice(order.total)}</span></div>
+              <div className="summary-row"><span>{t("Subtotal")}</span><span>{formatPrice(order.subtotal)}</span></div>
+              <div className="summary-row"><span>{isPickup ? t("Pickup in store") : t("Delivery")}</span><span>{order.delivery === 0 ? t("Free") : formatPrice(order.delivery)}</span></div>
+              <div className="summary-row total"><span>{t("Total (Cash on Delivery)")}</span><span>{formatPrice(order.total)}</span></div>
             </div>
             {isPickup ? (
               <div style={{ marginTop: 24 }}>
-                <h3 className="summary-h">Where to collect</h3>
+                <h3 className="summary-h">{t("Where to collect")}</h3>
                 <StoreMap height={220} />
               </div>
             ) : null}
@@ -51,9 +53,9 @@ export function OrderConfirmed() {
             </div>
           </>
         ) : (
-          <p className="muted">Your order has been received. (No order details to display — this page was opened directly.)</p>
+          <p className="muted">{t("Your order has been received. (No order details to display — this page was opened directly.)")}</p>
         )}
-        <p style={{ marginTop: 24 }}><Link className="btn btn-gold" to="/category/all">Continue shopping</Link></p>
+        <p style={{ marginTop: 24 }}><Link className="btn btn-gold" to="/category/all">{t("Continue shopping")}</Link></p>
       </div>
     </section>
   );

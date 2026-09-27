@@ -3,10 +3,12 @@ import { Link } from "react-router-dom";
 import { useStore, lineKey } from "../context/StoreContext";
 import { useCartLines } from "../lib/useCartLines";
 import { formatPrice } from "../lib/format";
+import { useT } from "../lib/i18n";
 
 export function CartDrawer() {
   const { drawerOpen, closeDrawer, setQty, removeFromCart } = useStore();
   const { lines, subtotal } = useCartLines();
+  const t = useT();
 
   useEffect(() => {
     if (!drawerOpen) return;
@@ -32,8 +34,8 @@ export function CartDrawer() {
         aria-hidden={!drawerOpen}
       >
         <div className="drawer-head">
-          <h2>Your Cart</h2>
-          <button className="drawer-close" type="button" onClick={closeDrawer} aria-label="Close cart">
+          <h2>{t("Your Cart")}</h2>
+          <button className="drawer-close" type="button" onClick={closeDrawer} aria-label={t("Close cart")}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} aria-hidden="true">
               <path d="M6 6l12 12M18 6L6 18" />
             </svg>
@@ -42,7 +44,7 @@ export function CartDrawer() {
 
         <div className="drawer-body">
           {lines.length === 0 ? (
-            <p className="drawer-empty">Your cart is empty.</p>
+            <p className="drawer-empty">{t("Your cart is empty.")}</p>
           ) : (
             lines.map(({ line, product, unitPrice, lineTotal }) => (
               <div className="drawer-line" key={lineKey(line.id, line.size)}>
@@ -59,7 +61,7 @@ export function CartDrawer() {
                 </div>
                 <div style={{ textAlign: "right" }}>
                   <div className="price">{formatPrice(lineTotal)}</div>
-                  <button className="l-remove" type="button" onClick={() => removeFromCart(line.id, line.size)}>Remove</button>
+                  <button className="l-remove" type="button" onClick={() => removeFromCart(line.id, line.size)}>{t("Remove")}</button>
                 </div>
               </div>
             ))
@@ -69,11 +71,11 @@ export function CartDrawer() {
         {lines.length > 0 ? (
           <div className="drawer-foot">
             <div className="row">
-              <span className="lbl">Subtotal</span>
+              <span className="lbl">{t("Subtotal")}</span>
               <span className="total">{formatPrice(subtotal)}</span>
             </div>
-            <Link className="btn btn-gold btn-block" to="/cart" onClick={closeDrawer}>Checkout (Cash on Delivery)</Link>
-            <p className="note-sm">Shipping calculated at checkout · Pay on delivery</p>
+            <Link className="btn btn-gold btn-block" to="/cart" onClick={closeDrawer}>{t("Checkout (Cash on Delivery)")}</Link>
+            <p className="note-sm">{t("Shipping calculated at checkout · Pay on delivery")}</p>
           </div>
         ) : null}
       </aside>

@@ -63,8 +63,8 @@ export function Header() {
     <>
       <div className="topbar">
         <div className="container">
-          <span className="topbar-full">Authentic products only · Professional advice in-store &amp; online</span>
-          <span className="topbar-short">Authentic products · Cash on delivery</span>
+          <span className="topbar-full">{t("Authentic products only · Professional advice in-store & online")}</span>
+          <span className="topbar-short">{t("Authentic products · Cash on delivery")}</span>
         </div>
       </div>
 
@@ -159,11 +159,11 @@ export function Header() {
                       </Link>
                     ))}
                     <button type="button" className="search-suggest-all" onClick={goToResults}>
-                      See all results for “{query.trim()}”
+                      {t("See all results for")} “{query.trim()}”
                     </button>
                   </>
                 ) : (
-                  <p className="search-suggest-empty">No matches for “{query.trim()}”. Press Enter to search everything.</p>
+                  <p className="search-suggest-empty">{t("No matches for")} “{query.trim()}”. {t("Press Enter to search everything.")}</p>
                 )}
               </div>
             ) : null}
@@ -174,8 +174,8 @@ export function Header() {
           <div className="catmenu-overlay" onClick={() => setOpenCats(false)} aria-hidden="true" />
           <nav className="catmenu-panel" id="catbar" aria-label="Product categories" aria-hidden={!openCats}>
             <div className="catmenu-head">
-              <span className="catmenu-title">Shop by category</span>
-              <button className="catmenu-close" type="button" onClick={() => setOpenCats(false)} aria-label="Close menu">
+              <span className="catmenu-title">{t("Shop by category")}</span>
+              <button className="catmenu-close" type="button" onClick={() => setOpenCats(false)} aria-label={t("Close menu")}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} aria-hidden="true">
                   <path d="M6 6l12 12M18 6L6 18" />
                 </svg>
@@ -184,13 +184,13 @@ export function Header() {
             <ul className="catnav">
               {navCategories.map((c) => (
                 <li key={c.slug}>
-                  <NavLink to={`/category/${c.slug}`} onClick={() => setOpenCats(false)}>{c.name}</NavLink>
+                  <NavLink to={`/category/${c.slug}`} onClick={() => setOpenCats(false)}>{t(c.name)}</NavLink>
                 </li>
               ))}
-              <li><NavLink to="/brands" onClick={() => setOpenCats(false)}>Our Brands</NavLink></li>
-              <li><NavLink to="/category/promotions" onClick={() => setOpenCats(false)}>Promotions</NavLink></li>
-              <li className="catnav-sep"><NavLink to="/wishlist" onClick={() => setOpenCats(false)}>Wishlist</NavLink></li>
-              <li><NavLink to="/account" onClick={() => setOpenCats(false)}>My Account</NavLink></li>
+              <li><NavLink to="/brands" onClick={() => setOpenCats(false)}>{t("Our Brands")}</NavLink></li>
+              <li><NavLink to="/category/promotions" onClick={() => setOpenCats(false)}>{t("Promotions")}</NavLink></li>
+              <li className="catnav-sep"><NavLink to="/wishlist" onClick={() => setOpenCats(false)}>{t("Wishlist")}</NavLink></li>
+              <li><NavLink to="/account" onClick={() => setOpenCats(false)}>{t("My Account")}</NavLink></li>
             </ul>
           </nav>
         </div>

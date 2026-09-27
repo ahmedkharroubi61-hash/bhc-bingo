@@ -4,10 +4,12 @@ import { formatPrice } from "../lib/format";
 import { isOutOfStock, OUT_OF_STOCK_LABEL } from "../lib/stock";
 import { IconHeart, IconStar } from "./icons";
 import { AddToCartButton } from "./AddToCartButton";
+import { useT } from "../lib/i18n";
 import type { Product } from "../lib/types";
 
 export function ProductCard({ product, badge }: { product: Product; badge?: string }) {
   const { addToCart, toggleWishlist, inWishlist } = useStore();
+  const t = useT();
   const pressed = inWishlist(product.id);
   const hasSizes = !!product.sizes && product.sizes.length > 0;
   const soldOut = isOutOfStock(product);
@@ -28,7 +30,7 @@ export function ProductCard({ product, badge }: { product: Product; badge?: stri
           aria-pressed={pressed}
           onClick={() => toggleWishlist(product.id)}
         >
-          <span className="visually-hidden">{pressed ? "Remove from wishlist" : "Add to wishlist"}</span>
+          <span className="visually-hidden">{pressed ? t("Remove from wishlist") : t("Add to wishlist")}</span>
           <IconHeart />
         </button>
         <Link className="media-open" to={href} aria-label={`View ${product.title}`}>
@@ -43,7 +45,7 @@ export function ProductCard({ product, badge }: { product: Product; badge?: stri
           {product.rating.toFixed(1)} <span className="count">({product.ratingCount})</span>
         </span>
         <div className="price-row">
-          {hasSizes ? <span className="price-from">from</span> : null}
+          {hasSizes ? <span className="price-from">{t("from")}</span> : null}
           <span className="price">{formatPrice(product.priceMillimes)}</span>
           {product.oldPriceMillimes ? (
             <span className="price-old">{formatPrice(product.oldPriceMillimes)}</span>
@@ -53,11 +55,11 @@ export function ProductCard({ product, badge }: { product: Product; badge?: stri
           {soldOut ? (
             <button className="btn btn-outline btn-block" type="button" disabled>{OUT_OF_STOCK_LABEL}</button>
           ) : hasSizes ? (
-            <Link className="btn btn-outline btn-block" to={href}>Choose size</Link>
+            <Link className="btn btn-outline btn-block" to={href}>{t("Choose size")}</Link>
           ) : (
             <AddToCartButton
               className="btn btn-outline btn-block"
-              label="Add to Cart"
+              label={t("Add to Cart")}
               onAdd={() => addToCart(product.id)}
             />
           )}

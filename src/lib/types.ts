@@ -40,6 +40,10 @@ export interface Product {
   bestFor?: string;
   ingredients?: string;
   howToUse?: string;
+  /** French detail-page content; shown when the language is French, else the base fields. */
+  descriptionFr?: string;
+  ingredientsFr?: string;
+  howToUseFr?: string;
 }
 
 /** How the order reaches the customer. */

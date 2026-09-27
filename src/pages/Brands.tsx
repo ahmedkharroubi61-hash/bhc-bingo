@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useProducts } from "../lib/useProducts";
 import { IconArrow } from "../components/icons";
+import { useT } from "../lib/i18n";
 
 interface BrandInfo {
   name: string;
@@ -11,6 +12,7 @@ interface BrandInfo {
 
 export function Brands() {
   const products = useProducts();
+  const t = useT();
 
   const brands = useMemo<BrandInfo[]>(() => {
     const map = new Map<string, BrandInfo>();
@@ -29,17 +31,17 @@ export function Brands() {
         <div className="cat-hero-scrim" aria-hidden="true" />
         <div className="container cat-hero-inner">
           <p className="cat-hero-kicker">BHC Bingo · Parapharmacie</p>
-          <h1 className="cat-hero-title" id="brands-title">Our Brands</h1>
-          <p className="cat-hero-sub">The dermatologist-loved houses we curate — explore each brand's full range.</p>
+          <h1 className="cat-hero-title" id="brands-title">{t("Our Brands")}</h1>
+          <p className="cat-hero-sub">{t("The dermatologist-loved houses we curate — explore each brand's full range.")}</p>
         </div>
       </section>
 
       <section className="section catalog-section">
         <div className="container">
           {products == null ? (
-            <p className="muted">Loading…</p>
+            <p className="muted">{t("Loading…")}</p>
           ) : brands.length === 0 ? (
-            <p className="muted">No brands yet.</p>
+            <p className="muted">{t("No brands yet.")}</p>
           ) : (
             <div className="brand-grid">
               {brands.map((b) => (
@@ -47,7 +49,7 @@ export function Brands() {
                   <span className="brand-card-media"><img src={b.image} alt="" loading="lazy" /></span>
                   <span className="brand-card-body">
                     <span className="brand-card-name">{b.name}</span>
-                    <span className="brand-card-count">{b.count} {b.count === 1 ? "product" : "products"}</span>
+                    <span className="brand-card-count">{b.count} {b.count === 1 ? t("product") : t("products")}</span>
                   </span>
                   <span className="brand-card-arrow" aria-hidden="true"><IconArrow /></span>
                 </Link>

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
+import { useT } from "../lib/i18n";
 
 type AtcState = "idle" | "loading" | "added";
 
@@ -24,7 +25,9 @@ interface AddToCartButtonProps {
  * drawer), while the button plays a short spinner → check confirmation.
  * The animation is cosmetic (the cart is local); reduced-motion skips the spinner.
  */
-export function AddToCartButton({ onAdd, label, className = "", addedLabel = "Added" }: AddToCartButtonProps) {
+export function AddToCartButton({ onAdd, label, className = "", addedLabel }: AddToCartButtonProps) {
+  const t = useT();
+  const added = addedLabel ?? t("Added");
   const [state, setState] = useState<AtcState>("idle");
   const timers = useRef<number[]>([]);
 
@@ -67,10 +70,10 @@ export function AddToCartButton({ onAdd, label, className = "", addedLabel = "Ad
         <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round">
           <path className="atc-check" d="M20 6L9 17l-5-5" />
         </svg>
-        {addedLabel}
+        {added}
       </span>
       <span className="visually-hidden" role="status" aria-live="polite">
-        {state === "added" ? "Added to cart" : ""}
+        {state === "added" ? t("Added to cart") : ""}
       </span>
     </button>
   );
