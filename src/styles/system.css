@@ -1339,10 +1339,14 @@ html { overflow-x: clip; }
 @media (max-width: 720px) {
   .site-header .nav { padding-block: 12px; }
   /* Keep two balanced icons so the wordmark stays centred: search + cart.
-     Wishlist and account move into the menu drawer on phones. */
-  .nav-account, .nav-wishlist { display: none; }
+     Wishlist, account and the FR/EN switch move into the menu drawer on phones
+     (the switch on the bar unbalances the row and crowds the logo). */
+  .nav-account, .nav-wishlist, .nav-actions .lang-switch { display: none; }
   .brand-wordmark { font-size: 1.16rem; letter-spacing: .26em; padding-left: .26em; }
 }
+/* FR/EN switch inside the mobile menu drawer */
+.catmenu-lang { display: none; }
+@media (max-width: 720px) { .catmenu-lang { display: block; padding: 2px 10px 14px; } }
 @media (prefers-reduced-motion: reduce) {
   .header-search { transition: opacity .15s linear; }
 }

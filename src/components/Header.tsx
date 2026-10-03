@@ -181,6 +181,7 @@ export function Header() {
                 </svg>
               </button>
             </div>
+            <div className="catmenu-lang"><LanguageSwitcher /></div>
             <ul className="catnav">
               {navCategories.map((c) => (
                 <li key={c.slug}>
