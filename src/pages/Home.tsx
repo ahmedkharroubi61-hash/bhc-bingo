@@ -234,7 +234,7 @@ export function Home() {
         <div className="nu-ingredients-scrim" aria-hidden="true" />
         <div className="container nu-ingredients-inner">
           <p className="nu-eyebrow light">What's inside matters</p>
-          <h2 className="nu-ingredients-word" id="nu-ing-title">CLEAN&nbsp;FORMULAS</h2>
+          <h2 className="nu-ingredients-word" id="nu-ing-title">CLEAN FORMULAS</h2>
           <div className="nu-ingredients-notes">
             <div><strong>Dermatologist-loved</strong><span>Formulas trusted by professionals</span></div>
             <div><strong>Authorised suppliers</strong><span>Every product, genuinely sourced</span></div>
