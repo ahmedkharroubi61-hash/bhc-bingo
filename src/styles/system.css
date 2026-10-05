@@ -2181,11 +2181,6 @@ body.split-mode { background: #14110f; }
 /* hand control: horizontal swipes drive the carousel, vertical ones still scroll the page */
 .nu-hero-cf { touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: grab; }
 .nu-hero-cf:active { cursor: grabbing; }
-.nu-hero-nav { display: flex; gap: 12px; justify-content: center; margin-top: 14px; position: relative; z-index: 120; }
-.nu-hero-arrow { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: #fff; color: var(--nu-espresso); border: 1px solid var(--line); box-shadow: 0 6px 16px -8px rgba(43,34,22,.4); cursor: pointer; transition: transform .15s ease, background .15s ease, color .15s ease; }
-.nu-hero-arrow:hover { background: var(--nu-espresso); color: #fff; }
-.nu-hero-arrow:active { transform: scale(.94); }
-.nu-hero-arrow.prev svg { transform: rotate(180deg); }
 
 /* ==========================================================================
    Checkout fulfilment (delivery / pickup) + store map

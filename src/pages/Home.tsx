@@ -184,16 +184,15 @@ function BrandStrip() {
  * Hero coverflow — product cards ride a 3D carousel: each one rises from the
  * back (small, turned away), sweeps to the front centre (big, facing you), then
  * recedes to the other side. Runs non-stop; hovering the cursor pauses it so a
- * card is easy to click. Visitors can also drag/swipe, trackpad-scroll, or use
- * the arrows to move through it themselves; it resumes a moment after.
+ * card is easy to click. Visitors can also drag/swipe or trackpad-scroll
+ * through it themselves; it resumes a moment after.
  */
 function HeroRoller({ items }: { items: Product[] }) {
-  const t = useT();
   const n = items.length;
   const cardRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const pausedRef = useRef(false);
   const offsetRef = useRef(0);
-  const targetRef = useRef<number | null>(null); // eased snap target (arrows / end of drag)
+  const targetRef = useRef<number | null>(null); // eased snap target (end of drag)
   const resumeAtRef = useRef(0);
   const dragRef = useRef<{ id: number; x: number; off: number; moved: boolean } | null>(null);
   const suppressClickRef = useRef(false);
@@ -202,10 +201,6 @@ function HeroRoller({ items }: { items: Product[] }) {
   // distance between neighbouring cards in px (matches the spread in step())
   const spacing = () => (cardRefs.current[0]?.offsetWidth || 240) * 0.92;
   const holdAutoplay = () => { resumeAtRef.current = performance.now() + RESUME_MS; };
-  const go = (dir: 1 | -1) => {
-    targetRef.current = Math.round(targetRef.current ?? offsetRef.current) + dir;
-    holdAutoplay();
-  };
 
   const onPointerDown = (e: React.PointerEvent) => {
     if (e.pointerType === "mouse" && e.button !== 0) return;
@@ -318,10 +313,6 @@ function HeroRoller({ items }: { items: Product[] }) {
             </span>
           </Link>
         ))}
-      </div>
-      <div className="nu-hero-nav">
-        <button type="button" className="nu-hero-arrow prev" aria-label={t("Previous product")} onClick={() => go(-1)}><IconArrow /></button>
-        <button type="button" className="nu-hero-arrow" aria-label={t("Next product")} onClick={() => go(1)}><IconArrow /></button>
       </div>
     </div>
   );
