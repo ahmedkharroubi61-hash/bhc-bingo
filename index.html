@@ -55,6 +55,88 @@
     </script>
   </head>
   <body>
+    <!-- Splash: logo + BINGO, the green dot hops over each letter and lands as the full stop.
+         Plain HTML/CSS so it paints before the app bundle loads; removed once the app is up. -->
+    <style>
+      #splash { position: fixed; inset: 0; z-index: 9999; display: grid; place-items: center; background: #fff; transition: opacity .45s ease, visibility .45s; }
+      #splash.done { opacity: 0; visibility: hidden; }
+      #splash .sp-mark { display: flex; align-items: center; gap: 10px; }
+      #splash img { height: 56px; width: auto; }
+      #splash .sp-word { position: relative; font: 800 2.2rem/1 "Montserrat", system-ui, sans-serif; color: #241D1A; letter-spacing: .005em; }
+      #splash .sp-word span { display: inline-block; }
+      #splash .sp-dot { color: #80B820; }
+      @media (max-width: 600px) { #splash img { height: 46px; } #splash .sp-word { font-size: 1.8rem; } }
+    </style>
+    <div id="splash" aria-hidden="true">
+      <div class="sp-mark">
+        <img src="/img/logo.png" alt="" width="343" height="283" />
+        <span class="sp-word"><span>B</span><span>I</span><span>N</span><span>G</span><span>O</span><span class="sp-dot">.</span></span>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var splash = document.getElementById("splash");
+        var MAX_MS = 6000;  // never trap a visitor behind the splash
+        var still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+        // stay up at least this long; hop() pushes it out until the dot has landed
+        var showUntil = Date.now() + (still ? 500 : 1200);
+        var loaded = false, gone = false;
+
+        function hop() {
+          var word = splash.querySelector(".sp-word");
+          var dot = word.querySelector(".sp-dot");
+          var letters = [].slice.call(word.querySelectorAll("span:not(.sp-dot)"));
+          if (!dot.animate) return;
+          var fs = parseFloat(getComputedStyle(word).fontSize);
+          var d = dot.getBoundingClientRect();
+          var home = d.left + d.width / 2;
+          var onTop = -0.72 * fs;   // "." lifted to sit on a capital letter
+          var lift = 0.5 * fs;      // extra height at the top of each hop
+          // landing spots: just left of B on the baseline, then each letter, then home
+          var spots = [{ x: letters[0].getBoundingClientRect().left - fs * 0.35 - home, y: 0 }];
+          letters.forEach(function (l) { var r = l.getBoundingClientRect(); spots.push({ x: r.left + r.width / 2 - home, y: onTop }); });
+          spots.push({ x: 0, y: 0 });
+          var hops = spots.length - 1, HOP = 230, total = hops * HOP;
+          showUntil = Math.max(showUntil, Date.now() + total + 300); // landed + a beat
+          var frames = [];
+          spots.forEach(function (s, i) {
+            frames.push({ transform: "translate(" + s.x + "px," + s.y + "px)", offset: i / hops, easing: "cubic-bezier(.3,0,.5,1)" });
+            if (i < hops) {
+              var n = spots[i + 1];
+              frames.push({ transform: "translate(" + (s.x + n.x) / 2 + "px," + (Math.min(s.y, n.y) - lift) + "px)", offset: (i + .5) / hops, easing: "cubic-bezier(.5,0,.7,1)" });
+            }
+          });
+          dot.animate(frames, { duration: total, fill: "both" });
+          // each letter dips a touch as the dot lands on it
+          letters.forEach(function (l, i) {
+            var at = (i + 1) * HOP;
+            l.animate([{ transform: "none" }, { transform: "translateY(3px)" }, { transform: "none" }],
+              { duration: 160, delay: at - 20, easing: "ease-out" });
+          });
+        }
+
+        function hide() {
+          if (gone) return;
+          gone = true;
+          splash.classList.add("done");
+          setTimeout(function () { splash.remove(); }, 500);
+        }
+        function tryHide() {
+          if (!loaded) return;
+          var wait = showUntil - Date.now();
+          if (wait > 0) setTimeout(tryHide, wait); else hide();
+        }
+        function ready() { loaded = true; tryHide(); }
+
+        if (!still) {
+          // measure with the real font, but don't wait forever for it
+          var fonts = document.fonts && document.fonts.ready;
+          Promise.race([fonts || Promise.resolve(), new Promise(function (r) { setTimeout(r, 700); })]).then(hop);
+        }
+        if (document.readyState === "complete") ready(); else addEventListener("load", ready);
+        setTimeout(hide, MAX_MS);
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
