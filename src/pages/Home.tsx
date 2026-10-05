@@ -55,19 +55,123 @@ const brandLogos = [
   { name: "Nuspa", img: "/img/brands/nuspa.png", label: "Nuspa" },
 ];
 
+/**
+ * Logos drift left on their own by moving scrollLeft (not a CSS transform), so
+ * the row stays swipeable by hand. Touching/hovering pauses it; it resumes a
+ * moment after you let go, and loops seamlessly over the duplicated set.
+ */
 function BrandStrip() {
   const t = useT();
-  const items = [...brandLogos, ...brandLogos];
+  // three copies: enough runway to wrap seamlessly both ways on wide screens
+  const items = [...brandLogos, ...brandLogos, ...brandLogos];
+  const railRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const rail = railRef.current;
+    const track = trackRef.current;
+    if (!rail || !track) return;
+    const SPEED = 40;     // px per second
+    const RESUME_MS = 1500;
+    const drift = !matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let held = false;
+    let resumeAt = 0;
+    let pos = 0;
+    let last = performance.now();
+    let raf = 0;
+    let drag: { x: number; left: number; moved: boolean } | null = null;
+    let suppressClick = false;
+
+    const hold = () => { held = true; };
+    const release = () => { held = false; resumeAt = performance.now() + RESUME_MS; };
+    const nudge = () => { resumeAt = performance.now() + RESUME_MS; };
+    const onEnter = (e: PointerEvent) => { if (e.pointerType === "mouse") hold(); };
+    const onLeave = (e: PointerEvent) => { if (e.pointerType === "mouse" && !drag) release(); };
+    // Mouse drag-to-scroll (touch already scrolls natively).
+    const onDown = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse" || e.button !== 0) return;
+      drag = { x: e.clientX, left: rail.scrollLeft, moved: false };
+    };
+    const onMove = (e: PointerEvent) => {
+      if (!drag) return;
+      const dx = e.clientX - drag.x;
+      if (!drag.moved && Math.abs(dx) > 5) drag.moved = true;
+      if (drag.moved) rail.scrollLeft = drag.left - dx;
+    };
+    const onUp = (e: PointerEvent) => {
+      if (!drag) return;
+      if (drag.moved) { suppressClick = true; setTimeout(() => { suppressClick = false; }, 0); }
+      drag = null;
+      if (!rail.contains(e.target as Node)) release();
+    };
+    // a drag shouldn't also open the brand page it started on
+    const onClick = (e: MouseEvent) => { if (suppressClick) { e.preventDefault(); e.stopPropagation(); } };
+
+    const shift = (d: number) => { pos += d; rail.scrollLeft = pos; if (drag) drag.left += d; };
+    const step = (now: number) => {
+      const dt = Math.min(0.1, (now - last) / 1000);
+      last = now;
+      // width of one full set of logos = distance to the first duplicate
+      const first = track.children[0] as HTMLElement | undefined;
+      const dup = track.children[brandLogos.length] as HTMLElement | undefined;
+      const loop = first && dup ? dup.offsetLeft - first.offsetLeft : 0;
+      if (drift && !held && now >= resumeAt) {
+        pos += SPEED * dt;
+        rail.scrollLeft = pos;
+      } else {
+        pos = rail.scrollLeft; // follow the user's own swipe/drag
+      }
+      // copies are identical, so jumping by one set is invisible
+      if (loop > 0 && pos >= loop) shift(-loop);
+      else if (loop > 0 && pos < 1) shift(loop);
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+
+    rail.addEventListener("pointerenter", onEnter);
+    rail.addEventListener("pointerleave", onLeave);
+    rail.addEventListener("pointerdown", onDown);
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    rail.addEventListener("click", onClick, true);
+    rail.addEventListener("touchstart", hold, { passive: true });
+    rail.addEventListener("touchend", release);
+    rail.addEventListener("touchcancel", release);
+    rail.addEventListener("wheel", nudge, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      rail.removeEventListener("pointerenter", onEnter);
+      rail.removeEventListener("pointerleave", onLeave);
+      rail.removeEventListener("pointerdown", onDown);
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      rail.removeEventListener("click", onClick, true);
+      rail.removeEventListener("touchstart", hold);
+      rail.removeEventListener("touchend", release);
+      rail.removeEventListener("touchcancel", release);
+      rail.removeEventListener("wheel", nudge);
+    };
+  }, []);
+
   return (
     <section className="section nu-brands" aria-labelledby="nu-brands-title">
       <div className="container">
         <h2 className="nu-brands-title" id="nu-brands-title">{t("Trusted brands we carry")}</h2>
       </div>
-      <div className="nu-brands-marquee">
-        <div className="nu-brands-track">
+      <div className="nu-brands-marquee" ref={railRef}>
+        <div className="nu-brands-track" ref={trackRef}>
           {items.map((b, i) => (
-            <Link key={`${b.name}-${i}`} to={`/brand/${encodeURIComponent(b.name)}`} className="nu-brand-logo" aria-label={b.label}>
-              <img src={b.img} alt={b.label} loading="lazy" />
+            <Link
+              key={`${b.name}-${i}`}
+              to={`/brand/${encodeURIComponent(b.name)}`}
+              className="nu-brand-logo"
+              aria-label={b.label}
+              draggable={false}
+              // only the first set is announced/tabbable; the rest are visual loop copies
+              aria-hidden={i >= brandLogos.length || undefined}
+              tabIndex={i >= brandLogos.length ? -1 : undefined}
+            >
+              <img src={b.img} alt={b.label} loading="lazy" draggable={false} />
             </Link>
           ))}
         </div>
@@ -80,13 +184,65 @@ function BrandStrip() {
  * Hero coverflow — product cards ride a 3D carousel: each one rises from the
  * back (small, turned away), sweeps to the front centre (big, facing you), then
  * recedes to the other side. Runs non-stop; hovering the cursor pauses it so a
- * card is easy to click.
+ * card is easy to click. Visitors can also drag/swipe, trackpad-scroll, or use
+ * the arrows to move through it themselves; it resumes a moment after.
  */
 function HeroRoller({ items }: { items: Product[] }) {
+  const t = useT();
   const n = items.length;
   const cardRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const pausedRef = useRef(false);
   const offsetRef = useRef(0);
+  const targetRef = useRef<number | null>(null); // eased snap target (arrows / end of drag)
+  const resumeAtRef = useRef(0);
+  const dragRef = useRef<{ id: number; x: number; off: number; moved: boolean } | null>(null);
+  const suppressClickRef = useRef(false);
+  const RESUME_MS = 2500;
+
+  // distance between neighbouring cards in px (matches the spread in step())
+  const spacing = () => (cardRefs.current[0]?.offsetWidth || 240) * 0.92;
+  const holdAutoplay = () => { resumeAtRef.current = performance.now() + RESUME_MS; };
+  const go = (dir: 1 | -1) => {
+    targetRef.current = Math.round(targetRef.current ?? offsetRef.current) + dir;
+    holdAutoplay();
+  };
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    dragRef.current = { id: e.pointerId, x: e.clientX, off: offsetRef.current, moved: false };
+    targetRef.current = null;
+  };
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const d = dragRef.current;
+    if (!d || d.id !== e.pointerId) return;
+    const dx = e.clientX - d.x;
+    if (!d.moved && Math.abs(dx) > 6) {
+      d.moved = true;
+      // capture only once it's a real drag, so a plain tap still clicks the card
+      try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* pointer already gone */ }
+    }
+    if (d.moved) offsetRef.current = d.off - dx / spacing();
+  };
+  const endDrag = (e: React.PointerEvent) => {
+    const d = dragRef.current;
+    if (!d || d.id !== e.pointerId) return;
+    dragRef.current = null;
+    if (d.moved) {
+      targetRef.current = Math.round(offsetRef.current); // settle on the nearest card
+      suppressClickRef.current = true;
+      setTimeout(() => { suppressClickRef.current = false; }, 0);
+    }
+    holdAutoplay();
+  };
+  const onClickCapture = (e: React.MouseEvent) => {
+    if (suppressClickRef.current) { e.preventDefault(); e.stopPropagation(); }
+  };
+  const onWheel = (e: React.WheelEvent) => {
+    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return; // vertical wheel = page scroll
+    targetRef.current = null;
+    offsetRef.current += e.deltaX / spacing();
+    holdAutoplay();
+  };
 
   useEffect(() => {
     if (n === 0) return;
@@ -96,7 +252,14 @@ function HeroRoller({ items }: { items: Product[] }) {
       const now = performance.now();
       const dt = Math.min(0.1, (now - last) / 1000);
       last = now;
-      if (!pausedRef.current) offsetRef.current += SPEED * dt;
+      const target = targetRef.current;
+      if (target !== null) {
+        const d = target - offsetRef.current;
+        if (Math.abs(d) < 0.002) { offsetRef.current = target; targetRef.current = null; }
+        else offsetRef.current += d * Math.min(1, dt * 9);
+      } else if (!pausedRef.current && !dragRef.current && now >= resumeAtRef.current) {
+        offsetRef.current += SPEED * dt;
+      }
       const off = offsetRef.current;
       // Spread cards ~1 card-width apart so neighbours never cross the front one.
       const cardW = cardRefs.current[0]?.offsetWidth || 240;
@@ -129,8 +292,15 @@ function HeroRoller({ items }: { items: Product[] }) {
     <div className="nu-hero-figure">
       <div
         className="nu-hero-cf"
-        onMouseEnter={() => { pausedRef.current = true; }}
-        onMouseLeave={() => { pausedRef.current = false; }}
+        // mouse only: a touch "hover" would stick and freeze the carousel on phones
+        onPointerEnter={(e) => { if (e.pointerType === "mouse") pausedRef.current = true; }}
+        onPointerLeave={(e) => { if (e.pointerType === "mouse") pausedRef.current = false; }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onClickCapture={onClickCapture}
+        onWheel={onWheel}
       >
         {items.map((p, i) => (
           <Link
@@ -138,8 +308,9 @@ function HeroRoller({ items }: { items: Product[] }) {
             ref={(el) => { cardRefs.current[i] = el; }}
             to={`/product/${p.id}`}
             className="nu-hero-card"
+            draggable={false}
           >
-            <img className="nu-hero-card-img" src={p.image} alt={p.alt} loading={i < 2 ? "eager" : "lazy"} />
+            <img className="nu-hero-card-img" src={p.image} alt={p.alt} loading={i < 2 ? "eager" : "lazy"} draggable={false} />
             <span className="nu-hero-card-info">
               <span className="nu-hero-card-brand">{p.brand}</span>
               <span className="nu-hero-card-title">{p.title}</span>
@@ -147,6 +318,10 @@ function HeroRoller({ items }: { items: Product[] }) {
             </span>
           </Link>
         ))}
+      </div>
+      <div className="nu-hero-nav">
+        <button type="button" className="nu-hero-arrow prev" aria-label={t("Previous product")} onClick={() => go(-1)}><IconArrow /></button>
+        <button type="button" className="nu-hero-arrow" aria-label={t("Next product")} onClick={() => go(1)}><IconArrow /></button>
       </div>
     </div>
   );
