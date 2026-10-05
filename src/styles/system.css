@@ -1976,6 +1976,20 @@ body.split-mode { background: #14110f; }
 }
 @media (prefers-reduced-motion: reduce) {
   .nu-marquee-track { animation: none; }
+  .nu-brands-track { animation: none; flex-wrap: wrap; justify-content: center; }
+}
+
+/* Brand logo strip — infinite scroller, each logo links to its brand page. */
+.nu-brands { padding-block: clamp(32px, 4vw, 52px); }
+.nu-brands-title { font-family: var(--serif); font-weight: 500; font-size: clamp(1.3rem, 3.4vw, 1.9rem); text-align: center; color: var(--nu-espresso); margin-bottom: clamp(20px, 3vw, 32px); }
+.nu-brands-marquee { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+.nu-brands-track { display: flex; width: max-content; gap: 18px; align-items: center; animation: nu-scroll 36s linear infinite; }
+.nu-brands-marquee:hover .nu-brands-track { animation-play-state: paused; }
+.nu-brand-logo { flex: 0 0 auto; display: grid; place-items: center; width: 170px; height: 104px; padding: 18px 24px; background: #fff; border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 1px 2px rgba(30,24,15,.04); transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+.nu-brand-logo:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(30,24,15,.1); border-color: var(--nu-gold); }
+.nu-brand-logo img { max-width: 100%; max-height: 100%; object-fit: contain; }
+@media (max-width: 520px) {
+  .nu-brand-logo { width: 132px; height: 86px; padding: 14px 18px; }
 }
 
 /* ==========================================================================

@@ -42,6 +42,40 @@ function Marquee() {
   );
 }
 
+// Brand logos → each links to that brand's product page (/brand/<name>).
+// `brand` must match the product.brand string in the catalogue for the page to
+// list products; Brazil Protein and Nuspa have no stock yet (links go live once
+// products are added under those brand names).
+const brandLogos = [
+  { name: "Argan Oil", img: "/img/brands/argan-oil.png", label: "Argan Oil from Morocco" },
+  { name: "Florative", img: "/img/brands/floractive.webp", label: "Floractive Professional" },
+  { name: "Posa", img: "/img/brands/posa.png", label: "Posa" },
+  { name: "Marula Oil", img: "/img/brands/marula-oil.png", label: "Marula Oil Diamond Edge" },
+  { name: "Brazil Protein", img: "/img/brands/brazil-protein.png", label: "Brazil Protein" },
+  { name: "Nuspa", img: "/img/brands/nuspa.png", label: "Nuspa" },
+];
+
+function BrandStrip() {
+  const t = useT();
+  const items = [...brandLogos, ...brandLogos];
+  return (
+    <section className="section nu-brands" aria-labelledby="nu-brands-title">
+      <div className="container">
+        <h2 className="nu-brands-title" id="nu-brands-title">{t("Trusted brands we carry")}</h2>
+      </div>
+      <div className="nu-brands-marquee">
+        <div className="nu-brands-track">
+          {items.map((b, i) => (
+            <Link key={`${b.name}-${i}`} to={`/brand/${encodeURIComponent(b.name)}`} className="nu-brand-logo" aria-label={b.label}>
+              <img src={b.img} alt={b.label} loading="lazy" />
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /**
  * Hero coverflow — product cards ride a 3D carousel: each one rises from the
  * back (small, turned away), sweeps to the front centre (big, facing you), then
@@ -159,6 +193,8 @@ export function Home() {
       </section>
 
       <Marquee />
+
+      <BrandStrip />
 
       {/* SHOP BY NEED */}
       <section className="section nu-needs" aria-labelledby="nu-needs-title">

@@ -48,6 +48,7 @@ export const fr: Record<string, string> = {
 
   // ---- Home sections ----
   "Find what works for you": "Trouvez ce qui vous convient",
+  "Trusted brands we carry": "Les marques de confiance que nous proposons",
   "All departments": "Tous les rayons",
   "Science-backed formulations, transparent sourcing, and the confidence of verified quality.": "Des formulations fondées sur la science, un sourcing transparent, et la confiance d'une qualité vérifiée.",
   "The edit": "La sélection",
