@@ -1912,6 +1912,39 @@ body.split-mode { background: #14110f; }
 .nu-circle:hover .nu-circle-img img { transform: scale(1.07); }
 .nu-circle-name { font-family: var(--sans); font-size: .96rem; font-weight: 600; color: var(--nu-ink); }
 
+/* Category circles in motion:
+   - pop in one after another when the row scrolls into view (hooks the site's .is-in reveal),
+   - then float gently, each out of step with its neighbours (--i is set per tile),
+   - hover lifts the tile and rings the photo in gold.
+   Entrance uses fill-mode "backwards" so it doesn't pin the transform afterwards (hover still works). */
+.reveal-ready .nu-needs:not(.is-in) .nu-circle { opacity: 0; }
+.reveal-ready .nu-needs.is-in .nu-circle {
+  animation: nu-circle-in .75s var(--nu-ease) backwards;
+  animation-delay: calc(var(--i, 0) * 90ms + 100ms);
+}
+@keyframes nu-circle-in {
+  from { opacity: 0; transform: translateY(30px) scale(.82); }
+  to   { opacity: 1; transform: none; }
+}
+.nu-circle-img {
+  animation: nu-bob 5s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * -0.7s);
+  transition: box-shadow .35s var(--nu-ease);
+}
+@keyframes nu-bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+.nu-circle { transition: transform .35s var(--nu-ease); }
+.nu-circle:hover { transform: translateY(-4px); }
+.nu-circle:hover .nu-circle-img,
+.nu-circle:focus-visible .nu-circle-img {
+  box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--nu-gold), 0 26px 44px -22px rgba(43,34,22,.55);
+}
+@media (prefers-reduced-motion: reduce) {
+  .nu-circle-img { animation: none; }
+}
+
 /* ---- STATS BAND ---- */
 .nu-band { background: var(--nu-espresso); color: #F1E8D6; }
 .nu-band-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(28px, 5vw, 70px); align-items: center; }
