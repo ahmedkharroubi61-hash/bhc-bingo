@@ -8,12 +8,14 @@ import { AdminOrders } from "./AdminOrders";
 import { AdminPos } from "./AdminPos";
 import { AdminReservations } from "./AdminReservations";
 import { AdminServices } from "./AdminServices";
+import { AdminCategories } from "./AdminCategories";
 import { IconGrid, IconBox, IconReceipt, IconExternal, IconRegister, IconClock, IconStarBadge } from "./adminIcons";
 
 const NAV = [
   { to: "/admin", label: "Dashboard", end: true, icon: IconGrid },
   { to: "/admin/pos", label: "New sale", end: false, icon: IconRegister },
   { to: "/admin/products", label: "Stock & Products", end: false, icon: IconBox },
+  { to: "/admin/categories", label: "Categories", end: false, icon: IconGrid },
   { to: "/admin/orders", label: "Orders", end: false, icon: IconReceipt },
   { to: "/admin/reservations", label: "Reservations", end: false, icon: IconClock },
   { to: "/admin/services", label: "Services", end: false, icon: IconStarBadge },
@@ -68,6 +70,7 @@ export function AdminApp() {
           <Route index element={<AdminDashboard />} />
           <Route path="pos" element={<AdminPos />} />
           <Route path="products" element={<AdminProducts />} />
+          <Route path="categories" element={<AdminCategories />} />
           <Route path="orders" element={<AdminOrders />} />
           <Route path="reservations" element={<AdminReservations />} />
           <Route path="services" element={<AdminServices />} />

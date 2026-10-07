@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useProducts } from "../lib/useProducts";
 import { ProductGrid } from "../components/ProductGrid";
-import { categories } from "../data/categories";
+import { categoryImage } from "../data/categories";
+import { useCategories } from "../lib/useCategoryNav";
 import { productMatches } from "../lib/search";
 import { useT } from "../lib/i18n";
 import type { Product } from "../lib/types";
@@ -25,8 +26,6 @@ const CAT_META: Record<string, CatMeta> = {
   baby: { sub: "Gentle, dermatologist-loved care for babies and mothers.", banner: "/img/lifestyle-1.jpg" },
   wellness: { sub: "Supplements and wellness essentials for daily balance.", banner: "/img/lifestyle-3.jpg" },
 };
-
-const CATEGORY_LABEL: Record<string, string> = Object.fromEntries(categories.map((c) => [c.slug, c.name]));
 
 const SORTS: [SortKey, string][] = [
   ["featured", "Featured"],
@@ -61,7 +60,10 @@ export function Catalog() {
   const routeKey = searchMode ? `q:${query.toLowerCase()}` : brandMode ? `brand:${brandParam}` : slug;
 
   const products = useProducts();
+  const categories = useCategories();
   const t = useT();
+  const cat = categories.find((c) => c.slug === slug);
+  const CATEGORY_LABEL = useMemo<Record<string, string>>(() => Object.fromEntries(categories.map((c) => [c.slug, c.name])), [categories]);
   const [facet, setFacet] = useState("all");
   const [sort, setSort] = useState<SortKey>("featured");
 
@@ -79,6 +81,9 @@ export function Catalog() {
     ? { sub: `Showing products matching “${query}”.`, banner: "/img/cat-makeup.jpg" }
     : brandMode
     ? { sub: `The full ${brandParam} range — authentic products, in stock and ready to ship.`, banner: "/img/cat-makeup.jpg" }
+    : cat
+    // an admin-uploaded picture wins; built-in categories keep their curated banner + copy
+    ? { sub: CAT_META[slug]?.sub ?? "Authentic products, chosen with care.", banner: cat.image || CAT_META[slug]?.banner || categoryImage(cat) }
     : CAT_META[slug] ?? CAT_META.all;
 
   const baseList = useMemo(
@@ -103,7 +108,7 @@ export function Catalog() {
     return Array.from(new Set(baseList.map((p) => p.brand)))
       .sort((a, b) => a.localeCompare(b))
       .map((b) => ({ value: b, label: b }));
-  }, [baseList, brandMode]);
+  }, [baseList, brandMode, CATEGORY_LABEL]);
 
   const list = useMemo(() => {
     const filtered = facet === "all"

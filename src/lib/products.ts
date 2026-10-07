@@ -89,11 +89,28 @@ export function invalidateProducts(): void {
   productsCache = null;
 }
 
-export async function getCategories(): Promise<Category[]> {
-  if (!supabase) return seedCategories;
-  const { data, error } = await supabase.from("categories").select("*").order("sort");
-  if (error || !data || data.length === 0) return seedCategories;
-  return data as Category[];
+let categoriesCache: Promise<Category[]> | null = null;
+
+/** Live category list (cached); falls back to the built-in list if the table can't be read. */
+export function getCategories(): Promise<Category[]> {
+  if (!supabase) return Promise.resolve(seedCategories);
+  if (!categoriesCache) {
+    const sb = supabase;
+    categoriesCache = (async () => {
+      const { data, error } = await sb.from("categories").select("*").order("sort");
+      if (error || !data || data.length === 0) return seedCategories;
+      return data as Category[];
+    })().catch(() => {
+      categoriesCache = null; // retry on the next read
+      return seedCategories;
+    });
+  }
+  return categoriesCache;
+}
+
+/** Drop the cached category list so the next read re-fetches (e.g. after an admin edit). */
+export function invalidateCategories(): void {
+  categoriesCache = null;
 }
 
 export async function getByTag(tag: ProductTag): Promise<Product[]> {

@@ -1,6 +1,5 @@
-export type CategorySlug =
-  | "skincare" | "face" | "body" | "hair"
-  | "makeup" | "sun" | "baby" | "wellness";
+/** Category slugs live in the `categories` table, so admins can add new ones. */
+export type CategorySlug = string;
 
 export type ProductTag = "featured" | "best" | "new" | "trending" | "showcase";
 
@@ -8,6 +7,8 @@ export interface Category {
   slug: CategorySlug;
   name: string;
   sort: number;
+  /** Tile / banner picture; falls back to a built-in image for the original categories. */
+  image?: string | null;
 }
 
 export interface ProductSize {

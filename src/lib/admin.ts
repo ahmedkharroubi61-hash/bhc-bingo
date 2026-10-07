@@ -213,6 +213,30 @@ export async function adminUploadProductImage(file: File): Promise<string> {
   return sb.storage.from(IMAGE_BUCKET).getPublicUrl(path).data.publicUrl;
 }
 
+/* ---- Categories (RLS: insert/update need is_admin()) ---- */
+
+/** "Compléments alimentaires" → "complements-alimentaires" (URL-safe, accents stripped). */
+export function slugify(name: string): string {
+  return name.normalize("NFD").replace(/[̀-ͯ]/g, "")
+    .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+export async function adminCreateCategory(input: { name: string; image: string; sort: number }): Promise<void> {
+  const sb = assertBackend();
+  const name = input.name.trim();
+  const slug = slugify(name);
+  if (!name || !slug) throw new Error("Please enter a category name.");
+  if (!input.image) throw new Error("Please upload a picture for the category.");
+  const { error } = await sb.from("categories").insert({ slug, name, image: input.image, sort: input.sort });
+  if (error) throw new Error(error.code === "23505" ? "A category with this name already exists." : error.message);
+}
+
+export async function adminUpdateCategory(slug: CategorySlug, patch: { name?: string; image?: string }): Promise<void> {
+  const sb = assertBackend();
+  const { error } = await sb.from("categories").update(patch).eq("slug", slug);
+  if (error) throw new Error(error.message);
+}
+
 interface OrderItemRow {
   product_id: string; title: string; unit_millimes: number; qty: number; line_millimes: number;
 }

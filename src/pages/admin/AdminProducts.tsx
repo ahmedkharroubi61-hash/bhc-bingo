@@ -6,15 +6,13 @@ import {
 } from "../../lib/admin";
 import { formatPrice } from "../../lib/format";
 import { ProductForm } from "./ProductForm";
-
-const CATEGORY_LABELS: Record<string, string> = {
-  skincare: "Skincare", face: "Face Care", body: "Body Care", hair: "Hair Care",
-  makeup: "Makeup", sun: "Sun Protection", baby: "Baby & Mother", wellness: "Wellness",
-};
+import { useCategories } from "../../lib/useCategoryNav";
 
 type Editing = { mode: "new" } | { mode: "edit"; product: AdminProduct } | null;
 
 export function AdminProducts() {
+  const categories = useCategories();
+  const CATEGORY_LABELS = useMemo<Record<string, string>>(() => Object.fromEntries(categories.map((c) => [c.slug, c.name])), [categories]);
   const [products, setProducts] = useState<AdminProduct[] | null>(null);
   const [soldByProduct, setSoldByProduct] = useState<Map<string, number>>(new Map());
   const [error, setError] = useState<string | null>(null);

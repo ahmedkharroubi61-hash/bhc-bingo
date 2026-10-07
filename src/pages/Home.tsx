@@ -2,19 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useT } from "../lib/i18n";
 import { useProducts } from "../lib/useProducts";
-import { useInStockCategorySet } from "../lib/useCategoryNav";
+import { useCategoryNav } from "../lib/useCategoryNav";
+import { categoryImage } from "../data/categories";
 import { formatPrice } from "../lib/format";
 import { isOutOfStock } from "../lib/stock";
 import { IconArrow } from "../components/icons";
 import type { Product, ProductTag } from "../lib/types";
-
-const needTiles = [
-  { slug: "skincare", name: "Daily Skincare", img: "/img/cat-skincare.jpg" },
-  { slug: "face", name: "Face Care", img: "/img/cat-face.jpg" },
-  { slug: "hair", name: "Hair & Scalp", img: "/img/cat-hair.jpg" },
-  { slug: "body", name: "Body Care", img: "/img/cat-body.jpg" },
-  { slug: "sun", name: "Sun Protection", img: "/img/cat-sun.jpg" },
-];
 
 const stats = [
   { n: "19+", l: "Curated products" },
@@ -321,8 +314,7 @@ function HeroRoller({ items }: { items: Product[] }) {
 export function Home() {
   const t = useT();
   const products = useProducts();
-  const inStock = useInStockCategorySet();
-  const tiles = needTiles.filter((c) => inStock.has(c.slug));
+  const tiles = useCategoryNav(); // live categories that have products (incl. admin-added ones)
   const [tab, setTab] = useState<ProductTag>("best");
   const by = (t: ProductTag): Product[] => (products ?? []).filter((p) => p.tags.includes(t));
 
@@ -372,8 +364,8 @@ export function Home() {
           <div className="nu-circles">
             {tiles.map((c, i) => (
               <Link key={c.slug} to={`/category/${c.slug}`} className="nu-circle" style={{ ["--i" as string]: i }}>
-                <span className="nu-circle-img"><img src={c.img} alt="" loading="lazy" /></span>
-                <span className="nu-circle-name">{c.name}</span>
+                <span className="nu-circle-img"><img src={categoryImage(c)} alt="" loading="lazy" /></span>
+                <span className="nu-circle-name">{t(c.name)}</span>
               </Link>
             ))}
           </div>

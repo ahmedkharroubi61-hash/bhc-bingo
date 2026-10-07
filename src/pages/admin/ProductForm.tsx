@@ -1,16 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { adminAiProductContent, adminCreateProduct, adminUpdateProduct, adminUploadProductImage, type AdminProduct, type AdminProductInput } from "../../lib/admin";
 import type { CategorySlug, ProductSize } from "../../lib/types";
+import { useCategories } from "../../lib/useCategoryNav";
 
 /** A size row while editing — price kept as an editable dinar string. */
 interface SizeDraft { label: string; price: string }
-
-const CATEGORIES: { slug: CategorySlug; name: string }[] = [
-  { slug: "skincare", name: "Skincare" }, { slug: "face", name: "Face Care" },
-  { slug: "body", name: "Body Care" }, { slug: "hair", name: "Hair Care" },
-  { slug: "makeup", name: "Makeup" }, { slug: "sun", name: "Sun Protection" },
-  { slug: "baby", name: "Baby & Mother" }, { slug: "wellness", name: "Wellness" },
-];
 
 /** millimes → editable dinar string (e.g. 28900 → "28.9"). */
 function toDt(millimes: number | null): string {
@@ -33,6 +27,7 @@ interface Props {
 
 export function ProductForm({ product, brandOptions, sizeOptions, onClose, onSaved }: Props) {
   const isEdit = !!product;
+  const categories = useCategories(); // live list, incl. categories added in Admin › Categories
   const [title, setTitle] = useState(product?.title ?? "");
   const [brand, setBrand] = useState(product?.brand ?? "");
   const [category, setCategory] = useState<CategorySlug>(product?.category ?? "skincare");
@@ -160,7 +155,7 @@ export function ProductForm({ product, brandOptions, sizeOptions, onClose, onSav
           <div className="admin-field-row">
             <label className="admin-field"><span>Category</span>
               <select value={category} onChange={(e) => setCategory(e.target.value as CategorySlug)}>
-                {CATEGORIES.map((c) => <option key={c.slug} value={c.slug}>{c.name}</option>)}
+                {categories.map((c) => <option key={c.slug} value={c.slug}>{c.name}</option>)}
               </select>
             </label>
             <label className="admin-field"><span>Stock</span>

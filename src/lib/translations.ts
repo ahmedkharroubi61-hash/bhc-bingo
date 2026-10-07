@@ -234,6 +234,8 @@ export const fr: Record<string, string> = {
   "Makeup": "Maquillage",
   "Baby & Mother": "Bébé & Maman",
   "Wellness": "Bien-être",
+  "Food Supplements": "Compléments alimentaires",
+  "Authentic products, chosen with care.": "Des produits authentiques, choisis avec soin.",
 
   // ---- Product card ----
   "Remove from wishlist": "Retirer des favoris",
