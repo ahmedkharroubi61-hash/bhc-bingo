@@ -26,9 +26,12 @@ insert into public.categories (slug, name, sort, image)
 values ('complements-alimentaires', 'Food Supplements', 9, '/img/cat-complement.jpg')
 on conflict (slug) do update set name = excluded.name, image = excluded.image;
 
--- 4) Move the supplements (vitamins, iron, magnesium, zinc, ginkgo, Angicalm) out of Wellness.
+-- 4) Move every pill/capsule supplement (vitamins, iron, magnesium, zinc, ginkgo,
+--    Angicalm) into the new category: the 20 from Wellness plus BigFfer 120mg,
+--    an iron supplement that had been filed under Skincare.
 update public.products set category = 'complements-alimentaires'
-where category = 'wellness' and id in (
+where id in (
+  'bigffer-120mg-6gdo',
   'vitawin-adulte-vitalite-immunite-ty4z',
   'vitastress-equilibre-emotionnel-a9mz',
   'polyfer-energie-equilibre-vitalite-ojyi',
