@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { useT } from "../lib/i18n";
 
-export function Placeholder({ title, note }: { title: string; note?: string }) {
+/** Simple content page. With `body` it shows that paragraph; without it, a "coming soon" note. */
+export function Placeholder({ title, note, body }: { title: string; note?: string; body?: string }) {
   const t = useT();
   return (
     <>
@@ -14,7 +15,9 @@ export function Placeholder({ title, note }: { title: string; note?: string }) {
       </div>
       <div className="section">
         <div className="container legal">
-          <div className="note"><strong>{t("Coming soon.")}</strong> {note ? t(note) : t("This page is being built in the next phase.")}</div>
+          {body ? <p>{t(body)}</p> : (
+            <div className="note"><strong>{t("Coming soon.")}</strong> {note ? t(note) : t("This page is being built in the next phase.")}</div>
+          )}
           <p><Link className="btn btn-gold" to="/shop">{t("Continue shopping")}</Link></p>
         </div>
       </div>

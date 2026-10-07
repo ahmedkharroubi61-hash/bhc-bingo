@@ -76,7 +76,7 @@ export function CheckoutPage() {
       return false;
     }
     if (!consent) {
-      setError(t("Please accept the order terms to continue."));
+      setError(t("Please confirm your details to continue."));
       return false;
     }
     setError("");
@@ -174,7 +174,7 @@ export function CheckoutPage() {
 
             <div className="consent-line" style={{ marginTop: 4 }}>
               <input id="co-consent" type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
-              <label htmlFor="co-consent">{t("I confirm my details are correct and agree to the")} <Link to="/terms-and-conditions">{t("order terms")}</Link> {t("and")} <Link to="/privacy-policy">{t("Privacy Policy")}</Link>.</label>
+              <label htmlFor="co-consent">{t("I confirm my details are correct.")}</label>
             </div>
             {error ? <p className="form-status err" role="alert">{error}</p> : null}
 

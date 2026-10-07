@@ -12,6 +12,7 @@ import { CheckoutPage } from "./pages/CheckoutPage";
 import { OrderConfirmed } from "./pages/OrderConfirmed";
 import { WishlistPage } from "./pages/WishlistPage";
 import { Placeholder } from "./pages/Placeholder";
+import { CookiePolicy } from "./pages/CookiePolicy";
 import { NotFound } from "./pages/NotFound";
 import { AccountPage } from "./pages/account/AccountPage";
 import { AdminApp } from "./pages/admin/AdminApp";
@@ -38,12 +39,9 @@ export default function App() {
         <Route path="/wishlist" element={<WishlistPage />} />
         <Route path="/account" element={<AccountPage />} />
         <Route path="/contact" element={<ContactPage />} />
-        <Route path="/about" element={<Placeholder title="About Us" />} />
+        <Route path="/about" element={<Placeholder title="About Us" body="BHC Bingo is a parapharmacie based in Sousse, Tunisia, bringing you authentic skincare, hair care, wellness products and food supplements from brands we trust. Every product comes from authorised suppliers, and our team is happy to give you professional advice in store or online. Order from home and pay in cash on delivery anywhere in Tunisia (delivery is 7 DT, free from 100 DT), or pick up your order at our shop." />} />
         <Route path="/shipping-returns" element={<Placeholder title="Shipping & Returns" />} />
-        <Route path="/legal-notice" element={<Placeholder title="Legal Notice" note="Legal pages are being ported from the previous build next." />} />
-        <Route path="/privacy-policy" element={<Placeholder title="Privacy Policy" note="Legal pages are being ported from the previous build next." />} />
-        <Route path="/cookie-policy" element={<Placeholder title="Cookie Policy" note="Legal pages are being ported from the previous build next." />} />
-        <Route path="/terms-and-conditions" element={<Placeholder title="Terms & Conditions" note="Legal pages are being ported from the previous build next." />} />
+        <Route path="/cookie-policy" element={<CookiePolicy />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

@@ -469,7 +469,7 @@ function Newsletter() {
           </form>
           <div className="nu-consent">
             <input id="news-consent" type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
-            <label htmlFor="news-consent">I agree to receive marketing emails from BHC Bingo and I have read the <Link to="/privacy-policy">Privacy Policy</Link>.</label>
+            <label htmlFor="news-consent">{t("I agree to receive marketing emails from BHC Bingo.")}</label>
           </div>
           {status ? <p className={`form-status ${status.ok ? "ok" : "err"}`} role="status" aria-live="polite">{status.msg}</p> : null}
         </div>

@@ -42,10 +42,7 @@ export function Footer() {
             <h4>{t("Company & Legal")}</h4>
             <ul>
               <li><Link to="/about">{t("About Us")}</Link></li>
-              <li><Link to="/legal-notice">{t("Legal Notice")}</Link></li>
-              <li><Link to="/privacy-policy">{t("Privacy Policy")}</Link></li>
               <li><Link to="/cookie-policy">{t("Cookie Policy")}</Link></li>
-              <li><Link to="/terms-and-conditions">{t("Terms & Conditions")}</Link></li>
               <li><a href="#" onClick={openCookieSettings}>{t("Cookie Settings")}</a></li>
             </ul>
           </div>
@@ -58,7 +55,7 @@ export function Footer() {
         <div className="container">
           <span>© {year} BHC Bingo Parapharmacie. {t("All rights reserved.")}</span>
           <span>
-            <Link to="/privacy-policy">{t("Privacy")}</Link> · <Link to="/cookie-policy">{t("Cookies")}</Link> · <Link to="/terms-and-conditions">{t("Terms")}</Link> · <Link to="/legal-notice">{t("Legal Notice")}</Link>
+            <Link to="/cookie-policy">{t("Cookies")}</Link>
           </span>
         </div>
       </div>
