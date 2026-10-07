@@ -1746,7 +1746,7 @@ body.split-mode { background: #14110f; }
 /* Admin › Categories: picture thumbnail + name rows */
 .cat-add { display: flex; gap: 10px; align-items: center; margin-bottom: 18px; max-width: 640px; }
 .cat-add .admin-search { flex: 1; }
-.svc-row:has(.cat-thumb) { grid-template-columns: 56px 1fr auto; }
+.svc-row:has(.cat-thumb) { grid-template-columns: 56px 1fr auto auto; }
 .cat-thumb { width: 56px; height: 56px; flex: none; border-radius: 10px; overflow: hidden; padding: 0; border: 1px dashed var(--adm-line-2); background: var(--adm-panel); color: var(--adm-ink); font-size: .68rem; cursor: pointer; display: grid; place-items: center; }
 .cat-thumb img { width: 100%; height: 100%; object-fit: cover; }
 .cat-thumb:hover { border-color: var(--adm-accent); }

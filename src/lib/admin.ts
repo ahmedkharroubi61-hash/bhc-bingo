@@ -237,6 +237,19 @@ export async function adminUpdateCategory(slug: CategorySlug, patch: { name?: st
   if (error) throw new Error(error.message);
 }
 
+export async function adminDeleteCategory(slug: CategorySlug): Promise<void> {
+  const sb = assertBackend();
+  // .select() so a silent RLS refusal (0 rows) is reported instead of looking like success
+  const { data, error } = await sb.from("categories").delete().eq("slug", slug).select("slug");
+  if (error) {
+    // 23503 = still referenced by products (FK)
+    throw new Error(error.code === "23503"
+      ? "This category still has products. Move them to another category (or delete them) first."
+      : error.message);
+  }
+  if (!data || data.length === 0) throw new Error("Category could not be deleted.");
+}
+
 interface OrderItemRow {
   product_id: string; title: string; unit_millimes: number; qty: number; line_millimes: number;
 }

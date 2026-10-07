@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { adminCreateCategory, adminUpdateCategory, adminUploadProductImage } from "../../lib/admin";
+import { adminCreateCategory, adminDeleteCategory, adminUpdateCategory, adminUploadProductImage } from "../../lib/admin";
 import { getCategories, invalidateCategories } from "../../lib/products";
 import { categoryImage } from "../../data/categories";
 import type { Category } from "../../lib/types";
 
-/** Shop categories: add new ones with a picture, rename, or change the picture. */
+/** Shop categories: add new ones with a picture, rename, change the picture, or delete. */
 export function AdminCategories() {
   const [cats, setCats] = useState<Category[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -66,6 +66,7 @@ export function AdminCategories() {
             <CategoryRow key={c.slug} cat={c} busy={busy}
               onRename={(name) => run(() => adminUpdateCategory(c.slug, { name }))}
               onImage={(file) => run(async () => adminUpdateCategory(c.slug, { image: await adminUploadProductImage(file) }))}
+              onDelete={() => { if (window.confirm(`Delete the category “${c.name}”?`)) run(() => adminDeleteCategory(c.slug)); }}
             />
           ))}
         </div>
@@ -74,8 +75,8 @@ export function AdminCategories() {
   );
 }
 
-function CategoryRow({ cat, busy, onRename, onImage }: {
-  cat: Category; busy: boolean; onRename: (name: string) => void; onImage: (file: File) => void;
+function CategoryRow({ cat, busy, onRename, onImage, onDelete }: {
+  cat: Category; busy: boolean; onRename: (name: string) => void; onImage: (file: File) => void; onDelete: () => void;
 }) {
   const [name, setName] = useState(cat.name);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -94,6 +95,7 @@ function CategoryRow({ cat, busy, onRename, onImage }: {
         onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }}
       />
       <span className="admin-muted cat-slug">/category/{cat.slug}</span>
+      <button type="button" className="admin-link-btn danger" onClick={onDelete} disabled={busy}>Delete</button>
     </div>
   );
 }

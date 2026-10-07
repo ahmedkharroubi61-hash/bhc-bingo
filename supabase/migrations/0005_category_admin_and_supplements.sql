@@ -15,6 +15,12 @@ create policy "categories admin update"
   on public.categories for update to authenticated
   using (public.is_admin()) with check (public.is_admin());
 
+-- Deleting is safe: products.category references categories(slug), so a category
+-- that still has products can't be removed (the admin UI explains why).
+drop policy if exists "categories admin delete" on public.categories;
+create policy "categories admin delete"
+  on public.categories for delete to authenticated using (public.is_admin());
+
 -- 3) The new category (FR label comes from the storefront translations).
 insert into public.categories (slug, name, sort, image)
 values ('complements-alimentaires', 'Food Supplements', 9, '/img/cat-complement.jpg')
