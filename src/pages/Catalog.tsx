@@ -20,7 +20,7 @@ const CAT_META: Record<string, CatMeta> = {
   promotions: { sub: "A considered selection of the pieces we love right now — thoughtfully priced.", banner: "/img/lifestyle-2.jpg" },
   skincare: { sub: "Cleansers, serums and daily rituals for healthy, radiant skin.", banner: "/img/cat-skincare.jpg" },
   face: { sub: "Targeted face care — hydration, anti-age and everyday glow.", banner: "/img/cat-face.jpg" },
-  body: { sub: "Nourishing body and foot care for everyday comfort.", banner: "/img/cat-body.jpg" },
+  body: { sub: "Nourishing body and foot care for everyday comfort.", banner: "/img/cat-body-care.jpg" },
   hair: { sub: "Shampoos, masques and serums for softer, stronger hair.", banner: "/img/cat-hair.jpg" },
   sun: { sub: "High-protection sun care for face and body.", banner: "/img/cat-sun.jpg" },
   baby: { sub: "Gentle, dermatologist-loved care for babies and mothers.", banner: "/img/cat-baby.jpg" },

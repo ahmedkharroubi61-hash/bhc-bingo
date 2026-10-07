@@ -8,7 +8,7 @@ import type { Category } from "../lib/types";
 export const categories: Category[] = [
   { slug: "skincare", name: "Skincare", sort: 1, image: "/img/cat-skincare.jpg" },
   { slug: "face", name: "Face Care", sort: 2, image: "/img/cat-face.jpg" },
-  { slug: "body", name: "Body Care", sort: 3, image: "/img/cat-body.jpg" },
+  { slug: "body", name: "Body Care", sort: 3, image: "/img/cat-body-care.jpg" },
   { slug: "hair", name: "Hair Care", sort: 4, image: "/img/cat-hair.jpg" },
   { slug: "makeup", name: "Makeup", sort: 5, image: "/img/cat-makeup.jpg" },
   { slug: "sun", name: "Sun Protection", sort: 6, image: "/img/cat-sun.jpg" },
