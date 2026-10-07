@@ -40,7 +40,6 @@ export default function App() {
         <Route path="/account" element={<AccountPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/about" element={<Placeholder title="About Us" body="BHC Bingo is a parapharmacie based in Sousse, Tunisia, bringing you authentic skincare, hair care, wellness products and food supplements from brands we trust. Every product comes from authorised suppliers, and our team is happy to give you professional advice in store or online. Order from home and pay in cash on delivery anywhere in Tunisia (delivery is 7 DT, free from 100 DT), or pick up your order at our shop." />} />
-        <Route path="/shipping-returns" element={<Placeholder title="Shipping & Returns" />} />
         <Route path="/cookie-policy" element={<CookiePolicy />} />
         <Route path="*" element={<NotFound />} />
       </Route>

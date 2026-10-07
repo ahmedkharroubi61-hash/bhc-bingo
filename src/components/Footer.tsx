@@ -34,7 +34,6 @@ export function Footer() {
             <h4>{t("Customer Service")}</h4>
             <ul>
               <li><Link to="/contact">{t("Contact Us")}</Link></li>
-              <li><Link to="/shipping-returns">{t("Shipping & Returns")}</Link></li>
               <li><Link to="/account">{t("My Account")}</Link></li>
             </ul>
           </div>

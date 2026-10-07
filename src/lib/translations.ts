@@ -188,7 +188,6 @@ export const fr: Record<string, string> = {
   "Promotions": "Promotions",
   "Customer Service": "Service client",
   "Contact Us": "Nous contacter",
-  "Shipping & Returns": "Livraison & Retours",
   "My Account": "Mon compte",
   "Company & Legal": "Société & Mentions légales",
   "About Us": "À propos",
