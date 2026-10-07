@@ -1973,15 +1973,6 @@ body.split-mode { background: #14110f; }
 .nu-shop-foot { display: flex; justify-content: center; margin-top: clamp(30px, 4vw, 46px); }
 
 /* ---- INGREDIENTS BAND ---- */
-.nu-ingredients { position: relative; overflow: hidden; min-height: clamp(340px, 42vw, 500px); display: flex; align-items: flex-end; }
-.nu-ingredients-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.nu-ingredients-scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(30,24,15,.15) 0%, rgba(30,24,15,.62) 100%); }
-.nu-ingredients-inner { position: relative; z-index: 1; width: 100%; padding-top: 48px; padding-bottom: clamp(30px, 4vw, 54px); color: #fff; }
-.nu-ingredients-word { font-family: var(--serif); font-weight: 500; font-size: clamp(2.6rem, 10vw, 8rem); line-height: .92; letter-spacing: -.02em; margin: 6px 0 26px; color: #F6EEDD; }
-.nu-ingredients-notes { display: flex; gap: clamp(24px, 6vw, 80px); flex-wrap: wrap; }
-.nu-ingredients-notes div { display: flex; flex-direction: column; gap: 3px; }
-.nu-ingredients-notes strong { font-family: var(--serif); font-size: 1.3rem; font-weight: 500; color: #fff; }
-.nu-ingredients-notes span { font-size: .86rem; color: rgba(255,255,255,.78); }
 
 /* ---- NEWSLETTER ---- */
 .nu-news { background: var(--nu-cream); }

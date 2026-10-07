@@ -422,19 +422,6 @@ export function Home() {
         </div>
       </section>
 
-      {/* INGREDIENTS BAND */}
-      <section className="nu-ingredients" aria-labelledby="nu-ing-title">
-        <img className="nu-ingredients-bg" src="/img/lifestyle-2.jpg" alt="" aria-hidden="true" loading="lazy" />
-        <div className="nu-ingredients-scrim" aria-hidden="true" />
-        <div className="container nu-ingredients-inner">
-          <p className="nu-eyebrow light">What's inside matters</p>
-          <h2 className="nu-ingredients-word" id="nu-ing-title">CLEAN FORMULAS</h2>
-          <div className="nu-ingredients-notes">
-            <div><strong>Dermatologist-loved</strong><span>Formulas trusted by professionals</span></div>
-            <div><strong>Authorised suppliers</strong><span>Every product, genuinely sourced</span></div>
-          </div>
-        </div>
-      </section>
 
       <Newsletter />
     </div>
