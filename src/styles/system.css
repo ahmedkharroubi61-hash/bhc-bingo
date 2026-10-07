@@ -2404,6 +2404,13 @@ body.split-mode { background: #14110f; }
 .ab-visit-area { font-family: var(--serif); font-size: 1.25rem; color: var(--nu-gold); margin: 6px 0 14px; }
 .ab-contacts { margin-top: 20px; max-width: 420px; }
 .ab-map { border-radius: 24px; overflow: hidden; box-shadow: 0 34px 60px -38px rgba(43,34,22,.55); }
+/* the map component inside a card: map flush on top, padded info strip below */
+.ab-map { background: #FBF6EC; border: 1px solid var(--nu-line); }
+.ab-map .store-map { gap: 0; }
+.ab-map .store-map-frame { border: 0; border-radius: 0; }
+.ab-map .store-map-meta { padding: 16px 20px 18px; }
+.ab-map .store-map-name { font-family: var(--serif); font-weight: 500; font-size: 1.1rem; color: var(--nu-ink); }
+.ab-map .store-map-area { color: var(--nu-dim); margin-top: 2px; }
 
 /* closing CTA */
 .ab-cta { padding-block: clamp(40px, 6vw, 72px); }
