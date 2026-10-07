@@ -24,7 +24,7 @@ const CAT_META: Record<string, CatMeta> = {
   hair: { sub: "Shampoos, masques and serums for softer, stronger hair.", banner: "/img/cat-hair.jpg" },
   sun: { sub: "High-protection sun care for face and body.", banner: "/img/cat-sun.jpg" },
   baby: { sub: "Gentle, dermatologist-loved care for babies and mothers.", banner: "/img/lifestyle-1.jpg" },
-  wellness: { sub: "Supplements and wellness essentials for daily balance.", banner: "/img/lifestyle-3.jpg" },
+  wellness: { sub: "Supplements and wellness essentials for daily balance.", banner: "/img/cat-wellness.jpg" },
 };
 
 const SORTS: [SortKey, string][] = [

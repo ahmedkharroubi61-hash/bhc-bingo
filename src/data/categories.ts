@@ -13,7 +13,7 @@ export const categories: Category[] = [
   { slug: "makeup", name: "Makeup", sort: 5, image: "/img/cat-makeup.jpg" },
   { slug: "sun", name: "Sun Protection", sort: 6, image: "/img/cat-sun.jpg" },
   { slug: "baby", name: "Baby & Mother", sort: 7, image: "/img/lifestyle-1.jpg" },
-  { slug: "wellness", name: "Wellness", sort: 8, image: "/img/lifestyle-3.jpg" },
+  { slug: "wellness", name: "Wellness", sort: 8, image: "/img/cat-wellness.jpg" },
 ];
 
 const BUILT_IN_IMAGE: Record<string, string> = Object.fromEntries(
